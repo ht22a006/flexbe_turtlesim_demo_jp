@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="FlexBE Turtlesim Demo">
+
+    <executable package_path="flexbe_turtlesim_demo_flexbe_behaviors.flexbe_turtlesim_demo_sm" class="FlexBETurtlesimDemoSM" />
+    <tagstring>Turtlesim, action, service, sub-behavior</tagstring>
+    <author>David Conner</author>
+    <date>July 2023</date>
+    <description>
+        FlexBE demonstration using ROS Turtlesim from ROS tutorials.
+        
+        Demonstrates several FlexBE capabilities including synchronous and async service calls, action interfaces, and  operator input.
+        
+    </description>
+
+
+    <!-- Contained Behaviors -->
+    <contains name="Turtlesim Input State Behavior" />
+
+    <!-- Available Parameters -->
+
+</behavior>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>flexbe_turtlesim_demo</name>
+  <version>0.0.0</version>
+  <description>
+    A meta-package to aggregate the FlexBE turtlesim demonstraion packages
+  </description>
+
+  <author email="robotics@cnu.edu">David Conner</author>
+  <maintainer email="robotics@cnu.edu">David Conner</maintainer>
+  <license>BSD</license>
+
+  <url>http://ros.org/wiki/flexbe</url>
+  <url type="bugtracker">https://github.com/FlexBE/flexbe_turtlesim_demo/issues</url>
+
+  <exec_depend>flexbe_behavior_engine</exec_depend>
+  <exec_depend>flexbe_app</exec_depend>
+  <exec_depend>flexbe_mirror</exec_depend>
+  <exec_depend>flexbe_turtlesim_demo_flexbe_behaviors</exec_depend>
+  <exec_depend>flexbe_turtlesim_demo_flexbe_states</exec_depend>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+    <!-- <metapackage/> -->
+  </export>
+
+</package>

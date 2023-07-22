@@ -1,0 +1,15 @@
+path: flexbe_turtlesim_demo_flexbe_states.teleport_absolute_state
+class: TeleportAbsoluteState
+
+import_only: false
+
+params:
+    turtle_name: 'turtle1'
+    x: 0.0
+    y: 0.0
+    theta: 0.0
+    call_timeout: 1.0
+    wait_timeout: 1.0
+
+outcome:
+    unavailable

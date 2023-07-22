@@ -1,0 +1,14 @@
+path: flexbe_turtlesim_demo_flexbe_states.rotate_turtle_state
+class: RotateTurtleState
+
+import_only: false
+
+params:
+    action_topic: 'action_is_not_available'
+    timeout: 0.5
+
+input:
+    angle: 2.
+
+outcome:
+    failed

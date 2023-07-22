@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Turtlesim Rotation State Behavior">
+
+    <executable package_path="flexbe_turtlesim_demo_flexbe_behaviors.turtlesim_rotation_state_behavior_sm" class="TurtlesimRotationStateBehaviorSM" />
+    <tagstring>Turtlesim, action</tagstring>
+    <author>Collin Stone</author>
+    <date>Mon Jul 17 2023</date>
+    <description>
+        A simple behavior demonstrating the Turtlesim RotateAbsolute action interface.
+        
+        The example includes userdata defined in the statemachine configuration.
+        
+    </description>
+
+
+    <!-- Contained Behaviors -->
+
+    <!-- Available Parameters -->
+
+</behavior>

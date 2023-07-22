@@ -1,0 +1,13 @@
+path: flexbe_turtlesim_demo_flexbe_states.timed_cmd_vel_state
+class: TimedCmdVelState
+
+import_only: false
+
+params:
+    target_time: 1.2
+    velocity: 0.24
+    rotation_rate: 0.2
+    cmd_topic: 'cmd_vel'
+
+outcome:
+    done

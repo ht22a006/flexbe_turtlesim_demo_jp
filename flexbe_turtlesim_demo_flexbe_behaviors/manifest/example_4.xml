@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Example 4">
+
+    <executable package_path="flexbe_turtlesim_demo_flexbe_behaviors.example_4_sm" class="Example4SM" />
+    <tagstring>example, container</tagstring>
+    <author>David Conner</author>
+    <date>Wed Jul 05 2023</date>
+    <description>
+        Example behavior that contains a (sub-)behavior.
+
+        This behavior contains the Example 3 behavior as a state.
+    </description>
+
+
+    <!-- Contained Behaviors -->
+    <contains name="Example 3" />
+
+    <!-- Available Parameters -->
+
+</behavior>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="Turtlesim Input State Behavior">
+
+    <executable package_path="flexbe_turtlesim_demo_flexbe_behaviors.turtlesim_input_state_behavior_sm" class="TurtlesimInputStateBehaviorSM" />
+    <tagstring>Turtlesim</tagstring>
+    <author>Collin Stone</author>
+    <date>Mon Jul 17 2023</date>
+    <description>
+        A simple behavior demonstrating the Turtlesim RotateAbsolute action interface, and
+        the FlexBE input state with a simple generic user interface.
+        
+    </description>
+
+
+    <!-- Contained Behaviors -->
+
+    <!-- Available Parameters -->
+
+</behavior>
