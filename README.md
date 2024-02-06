@@ -1,8 +1,7 @@
-# Flexbe Turtlesim-based Demonstration
+# Turtlesimを基にしたFlexbeのデモ
 
-This repo provides an introduction to the FlexBE Hierarchical Finite State Machine (HFSM) Behavior Engine.
-FlexBE includes both an *Onboard* robot control behavior executive and an
-Operator Control Station (*OCS*) for supervisory control and *collaborative autonomy*.
+このリポジトリでは、FlexBE 階層的有限状態機械（HFSM: Hierarchical Finite State Machine）行動エンジンについて紹介します。
+FlexBEには、*オンボードの* ロボット制御行動実行部と、監視制御と協調的自律性のためのオペレータ制御ステーション(*OCS*: Operator Control Station)の両方を含んでいます．
 
 This repo provides a self contained introduction to FlexBE with a
 "Quick Start" based on the simple 2D ROS Turtlesim [Turtlesim] simulator.
