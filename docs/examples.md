@@ -1,15 +1,11 @@
-# FlexBE Introductory Examples
+# FlexBE 導入例
 
-In addition to the basic TurtleSim quickstart demo, this
-repo includes several example behaviors to illustrate key
-FlexBE capabilities.
+このリポジトリには、基本的なTurtleSimクイックスタートデモに加えて、FlexBEの主要機能を説明するための動作例がいくつか含まれています。
 
-You are free to jump into any example, but they are designed to
-get progressively more complex and take advantage of earlier
-behaviors.
+どの例に飛ぶかは自由だが、徐々に複雑になっていき、それより前のビヘイビアを利用するように設計されています。
 
-* [Example 1](example1.md) - Basic FlexBE state implementations
-* [Example 2](example2.md) - Basic state machine
-* [Example 3](example3.md) - A HFSM behavior with concurrent states
-* [Example 4](example4.md) - Behavior composition - using behaviors in other behaviors (a 3-layer HFSM)
-* [Example 5](example5.md) - Priority containers
+* [例1](example1.md) - 基本的なFlexBEのステートの実装
+* [例2](example2.md) - 基本的なステートマシン
+* [例3](example3.md) - 並行ステートを持つHFSMのビヘイビア
+* [例4](example4.md) - ビヘイビア構成 - ビヘイビアを他のビヘイビアで使用する（3層のHFSM）
+* [例5](example5.md) - 優先コンテナ
