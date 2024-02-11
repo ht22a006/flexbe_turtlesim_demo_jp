@@ -1,13 +1,12 @@
-# Example 1 - Simple State Machine using FlexBE states
+# 例1 - 基本的なFlexBEのステートの実装
 
-The first behavior, `Example 1`, constructs a simple state machine
-using two states provided with the FlexBE Behavior Engine.
+最初のビヘイビアである`例1`は、FlexBEビヘイビアエンジンで提供される2つのステートを使ってシンプルなステートマシンを構築します。
 
-After starting the FlexBE system using either  
+以下のどちらかの方法でFlexBEを開始します。まとめて
 
 `ros2 launch flexbe_app flexbe_full.launch.py use_sim_time:=False`
 
-or the individual components
+または、個々のコンポーネントで
 
   `ros2 launch flexbe_onboard behavior_onboard.launch.py use_sim_time:=False`
 
@@ -17,41 +16,40 @@ or the individual components
 
   `ros2 run flexbe_widget be_launcher --ros-args --remap name:="behavior_launcher" -p use_sim_time:=False`
 
-Load the `Example 1` behavior from the FlexBE UI dashboard as shown in the leftmost image below.  Once loaded,
-the "Behavior Dashboard" shows the behavior configuration information as shown in the center image below.
-For this behavior, an operator settable "parameter" `waiting_time` is defined, along with a constant private configuration 
-variable `log_msg`.  In the upper left, the "Overview" pane provides the name of the behavior "Example 1", a description and author 
-information.  The behavior name is converted into the implementation Python file name, `example_1_sm.py` and class name `Example1SM`.
-In addition to the Python file, a "behavior manifest" `example_1.xml` is written as well.
+下の左端の画像のように、FlexBE UIダッシュボードから`Example 1`のビヘイビアを読み込みます。
+読み込むと、下図中央に示すように「Behavior Dashboard」にビヘイビア設定情報が表示されます。
+このビヘイビアでは、オペレータが設定可能な「パラメータ」 `waiting_time` と、定数のプライベート設定変数 `log_msg` が定義されています。
+左上の 「Overview」の領域には、ビヘイビア名「Example 1」、説明、作者情報が表示されます。 
+ビヘイビア名は、実装のPythonファイル名 `example_1_sm.py` とクラス名 `Example1SM` に変換されます。
+Pythonファイルに加えて、ビヘイビアマニフェスト `example_1.xml` も作成されます。
 
 <p float="center">
-  <img src="../img/example1_loading.png" alt="Loading Example 1." width="30%">
-  <img src="../img/example1_config.png" alt="Example 1 configuration." width="30%">
-  <img src="../img/example1_sm.png" alt="Example 1 state machine." width="30%">
+  <img src="../img/example1_loading.png" alt="例1の読み込み。" width="30%">
+  <img src="../img/example1_config.png" alt="例1の設定。" width="30%">
+  <img src="../img/example1_sm.png" alt="例1のステートマシーン。" width="30%">
 </p>
 
-FlexBE Behavior editor view for "Example 1" behavior.  Click on any image to see the high resolution annotated versions.
+「例1」ビヘイビアのFlexBE Behavior editor ビュー。 画像をクリックすると、高解像度の注釈付き画像が表示されます。
 
-The "Statemachine Editor" tab allows one to view the existing state machine that we have loaded, as shown in the rightmost image above.
-One could edit and save the state machine, but for now we will just explore.  By double clicking on a state, a state property edit box is opened, as shown in the outlined callouts above.  
+「Statemachine Editor」のタブでは、上の一番右の画像のように、ロードした既存のステートマシンを見ることができます。
+ステートマシンを編集して保存することもできますが、今は探索だけします。 ステートをダブルクリックすると、ステート プロパティ編集ボックスが開きます。
+例1では、以下に示す FlexBE の標準的な [`LogState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py) と [`WaitState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/wait_state.py) の実装を使用しています。
 
-Example 1 uses a standard FlexBE `LogState`(https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py) and a `WaitState`(https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/wait_state.py) state implementation show below.
-
-The log state is one of the simplest FlexBE state implementations.
+記録 (log) ステートは最も単純なFlexBEステートの実装の一つです。
 ```python
 from flexbe_core import EventState, Logger
 
 
 class LogState(EventState):
     """
-    A state that can log a predefined message.
+    定義済みのメッセージを記録できるステート。
 
-    Can be used to precisely inform the operator about what happened to the behavior.
+    ビヘイビアに何が起こったかをオペレーターに正確に伝えるために使用できる。
 
-    -- text      string  The message to be logged to the terminal.
-    -- severity  uint8   Type of logging (Logger.REPORT_INFO / WARN / HINT / ERROR)
+    -- text      string  端末にログされるメッセージ。
+    -- severity  uint8   ログの種類 (Logger.REPORT_INFO / WARN / HINT / ERROR)
 
-    <= done     Indicates that the message has been logged.
+    <= done     メッセージが記録されたことを示す。
     """
 
     def __init__(self, text, severity=Logger.REPORT_HINT):
@@ -60,47 +58,43 @@ class LogState(EventState):
         self._severity = severity
 
     def execute(self, userdata):
-        # Already logged. No need to wait for anything.
+        # すでに記録されている。何も待つ必要はない。
         return 'done'
 
     def on_enter(self, userdata):
-        """Log upon entering the state."""
+        """ステートに入る際に記録する"""
         Logger.log(self._text, self._severity)
 ```
 
-The state implementation is a Python script that provides the
-actual execution of the state. In this example, we import the FlexBE Logger class, which is used to which prints
-a message in the onboard terminal, the standard FlexBE log file, and on the operators FlexBE UI.  
-The `__init__` parameters `text` and `severity` are shown in the state property edit box as shown in the rightmost image above.
-The possible outcome `done` is likewise shown, and the editor allows one to set a required autonomy level for autonomous transition.
+ステートの実装は、ステートの実際の実行を提供するPythonスクリプトです。
+この例では、FlexBE Logger クラスをインポートしています。このクラスは、オンボード端末、標準 FlexBE ログファイル、およびオペレータの FlexBE UI にメッセージを表示するために使用されます。 
+`__init__` の引数 `text` と `severity` は、上の一番右の画像に示すように、ステートプロパティのエディタボックスに表示されます。
+可能な結果 `done` も同様に表示され、エディタでは自律トランジションに必要な自律性レベルを設定することができます。
 
-The state implementation must be defined by super classing the [`EventState`]:(https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/core/event_state.py)
-class provided by FlexBE in the `flexbe_core` package.
+ステートの実装は、FlexBE が `flexbe_core` パッケージで提供する [`EventState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/core/event_state.py) クラスを継承して定義しなければなりません。
 
-The Python doc-string in the `"""`-marks provides information
-about the state, and is used by the UI to display information about the data handling.  Special indicators are used for different data.
+`"""`マーク内のPython doc-stringは、ステートに関する情報を提供し、UIがデータの取り扱いに関する情報を表示するために使用されます。 特別なインジケータは異なるデータに対して使用されます。
 
-* `--` denote parameters defined in the `__init__`
-  * In this case `text` and `severity` are specified on construction.
-* `<=` denotes possible outcomes of the state
-  * In this case, only `done` is a possible outcome
-  * This information must match the `outcomes=['done']` specified in the `EventState` `super().__init__` method call.
+* `--` は `__init__` で定義された引数を表します。
+  * この場合、 `text` と `severity` はインスタンス時に指定されます。
+* `<=` は状態の可能な結果を表します。
+  * この場合、`done`だけが可能な結果です。
+  * この情報は `EventState`の`super().__init__` メソッド呼び出しで指定された `outcomes=['done']` と一致しなければなりません。
 
-Although, not shown in this example, other UI specifications include:
-* `>#` - data passed as input `userdata` from upstream states
-* `#>` - data passed as output `userdata` to downstream states
+この例では示していませんが、その他のUI仕様には以下のものがあります。
+* `>#` - 上流のステートから入力 `userdata` として渡されるデータ 
+* `#>` - 下流のステートへ出力 `userdata` として渡されるデータ
 
-> Note: Userdata can also be defined at the state machine level.
+> 注：userdataは、ステートマシンのレベルでも定義できます。
 
-The `LogState` includes two methods: `on_enter` and `execute`.
-The `on_enter` method is called when the state is first entered via a transition.  In this case, the state uses the `Logger`
-class to log the data to terminal, log file, and FlexBE UI.
+`LogState` には `on_enter` メソッドと `execute` メソッドがあります。
+`on_enter` メソッドは、トランジションによってステートに最初に入ったときに呼び出されます。 この場合、ステートは`Logger` クラスを使用して、端末、ログファイル、FlexBE UI にデータを記録 (log) します。
 
-The `execute` method is invoked at a specified rate until is returns something other than `None`.
-It is expected (and enforced at run time), that the returned values are as specified as valid (e.g. `done` in this case).
-For the `LogState` the execute function immediately returns `done` as there is nothing more to do.
+`execute`メソッドは `None` 以外の値を返すまで、指定された頻度で呼び出されます。
+返される値は、指定された有効な値（例えば、この場合は `done`）であることが期待されます（そして、実行時に強制されます）。
+`LogState`の場合、`execute`メソッドは何もすることがないので、すぐに`done`を返します。
 
-Our second state is the `WaitState`(https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/wait_state.py) state implementation show below.
+2番目のステートは、以下に示す[`WaitState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/wait_state.py)ステートの実装です。
 
 ```python
 from flexbe_core import EventState
@@ -108,11 +102,11 @@ from flexbe_core import EventState
 
 class WaitState(EventState):
     """
-    Implements a state that can be used to wait on timed process.
+    時間制限のあるプロセスを待つために使用できるステートの実装。
 
-    -- wait_time  float  Amount of time to wait in seconds.
+    -- wait_time  float  待機時間（秒）。
 
-    <= done       Indicates that the wait time has elapsed.
+    <= done       待ち時間が経過したことを示す。
     """
 
     def __init__(self, wait_time):
@@ -127,40 +121,37 @@ class WaitState(EventState):
         return None
 
     def on_enter(self, userdata):
-        """Upon entering the state, save the current time and start waiting."""
+        """このステートに入ると、現在時刻を保存して待機を開始する。"""
         self._start_time = WaitState._node.get_clock().now()
 ```
 
-The `wait_time` parameter says hown long to wait after entering the state before returning.
-This provides a simple delay within the state machine.
-This state also has only one outcome `done`.
-As shown in the rightmost image above, the `Wait_after_logging` named state instance of the `WaitState` implementation 
-sets the `wait_time` parameter to use the operator settable parameter `self.waiting_time`
+`wait_time`パラメータは、ステートに入ってから戻るまでの待ち時間を指定します。
+これはステートマシンの中で単純な遅延を与えます。
+このステートも結果は `done` だけです。
+上の一番右の図に示すように、 `WaitState` 実装の `Wait_after_logging` という名前のステートインスタンスでは、`wait_time` パラメータにオペレータが設定可能なパラメータ `self.waiting_time` を設定しています。
 
-After exploring these views, move to the "Runtime Control" tab of the FlexBE UI.
+これらのビューを探索した後、FlexBE UIの 「Runtime Control」タブに移動します。
 
-The leftmost image below shows the initial view prior to executing the behavior.  The operator can adjust the 
-`wait_time` parameter value (currently 3 seconds) here, and set the initial supervised autonomy level.  In this case 
-we block any transitions that required anything higher than "Off".
+下の一番左の画像は、動作を実行する前の初期表示です。 オペレータはここで`wait_time`パラメーター値（現在は3秒）を調整し、初期の監視自律レベルを設定することができます。 
+この場合、「Off」よりも高い値を必要とするトランジションはブロックします。
 
-> Note:  For this behavior, the `wait_time` was initially configured as `3` without a decimal point.  
-> This will require an integer value as input.  To allow for floating point values, specify with a decimal point (e.g., `3.`).
+> 注：この動作のために、`wait_time`は初期状態では小数点なしの`3`として設定されています。 
+> これは入力として整数値を必要とします。 浮動小数点値を許可するには、小数点付きで指定してください（例：`3.`）。
 
-The center image shows the initial `Print_Message` state with the output  blocked due to the required autonomy level.  
-The system requests the operator to click on "done" transition in the oval label to enable the transition to next state.
-The "Behavior Feedback" pane shows output logged from the onboard behavior, including the "Hello World!" message originally 
-defined on the configuration screen.  This message is also logged on the onboard terminal window where the onboard node was started.
-After clicking on the "done" transition, the current active state transitions to the `Wait_After_Logging" state as shown in the rightmost
-image below.  As this is during the wait period the output transition is shown in gray, whereas the center image shows the transition that is active highlighted in yellow.  The operator can wait for the state to finish, or can choose to preempt the state and force the "done" transition by clicking on the label oval prior to the wait time completing.  Because this state has "Off" autonomy level, the behavior will autonomously complete and return outcome "finished" as it returns to the "Start" pane shown in the leftmost image.
-
+中央の画像は初期状態の `Print_Message` で、必要な自律性レベルのために出力がブロックされています。 
+システムは、次の状態へのトランジションを有効にするために、楕円形のラベルの「done」トランジションをクリックするようオペレータに要求します。
+「Behavior Feedback」の領域には、設定画面で元々定義されていた「Hello World！」メッセージを含む、オンボードビヘイビアから記録された出力が表示されます。 このメッセージは、オンボードノードが起動したオンボード端末ウィンドウにも記録されます。
+「done」トランジションをクリックした後、現在のアクティブな状態は、下の一番右の画像に示すように、`Wait_After_Logging`ステートにトランジットします。
+これは待機期間中なので、出力トランジションは灰色で表示され、中央の画像はアクティブなトランジションが黄色で強調表示されています。
+オペレータはステートが終了するのを待つか、待機時間が終了する前にラベルの楕円をクリックして状態を先取りし、「done」トランジションを強制することを選択できます。 
+このステートは自律性レベルが「オフ」であるため、ビヘイビアは自律的に完了し、一番左の画像に示されている「Start」領域に戻ると、結果が「finished」に戻ります。
 
 <p float="center">
-  <img src="../img/example1_start_low.png" alt="Example 1 start screen." width="30%">
-  <img src="../img/example1_low_block.png" alt="Example 1 log messages." width="30%">
-  <img src="../img/example1_wait.png" alt="Example 1 waiting." width="30%">
+  <img src="../img/example1_start_low.png" alt="例1 開始画面" width="30%">
+  <img src="../img/example1_low_block.png" alt="例1 ログメッセージ" width="30%">
+  <img src="../img/example1_wait.png" alt="例1 待機中." width="30%">
 </p>
 
-For the next run, try setting the autonomy level higher to "High" or "Full", which will allow the behavior to run to completion without the operator needed to click "done" after the log state.
+次の実行では、自律性レベルをより高く「High」または 「Full 」に設定してみてください。そうすれば、オペレータがログステートの後に 「done」をクリックしなくても、動作が完了するまで実行できるようになります。
 
-After this, continue on to [Example 2](docs/example2.md) for a more indepth discussion of the state implementations.
-
+この後、ステートの実装についてのより詳細な議論については、[例2](docs/example2.md)へ続けてください。
