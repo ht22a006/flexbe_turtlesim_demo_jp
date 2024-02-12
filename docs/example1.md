@@ -35,21 +35,21 @@ Pythonファイルに加えて、ビヘイビアマニフェスト `example_1.xm
 ステートマシンを編集して保存することもできますが、今は探索だけします。 ステートをダブルクリックすると、ステート プロパティ編集ボックスが開きます。
 例1では、以下に示す FlexBE の標準的な [`LogState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py) と [`WaitState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/wait_state.py) の実装を使用しています。
 
-記録 (log) ステートは最も単純なFlexBEステートの実装の一つです。
+ログ出力 (log) ステートは最も単純なFlexBEステートの実装の一つです。
 ```python
 from flexbe_core import EventState, Logger
 
 
 class LogState(EventState):
     """
-    定義済みのメッセージを記録できるステート。
+    定義済みのメッセージをログ出力できるステート。
 
     ビヘイビアに何が起こったかをオペレーターに正確に伝えるために使用できる。
 
     -- text      string  端末にログされるメッセージ。
     -- severity  uint8   ログの種類 (Logger.REPORT_INFO / WARN / HINT / ERROR)
 
-    <= done     メッセージが記録されたことを示す。
+    <= done     メッセージがログ出力されたことを示す。
     """
 
     def __init__(self, text, severity=Logger.REPORT_HINT):
@@ -58,11 +58,11 @@ class LogState(EventState):
         self._severity = severity
 
     def execute(self, userdata):
-        # すでに記録されている。何も待つ必要はない。
+        # すでにログ出力されている。何も待つ必要はない。
         return 'done'
 
     def on_enter(self, userdata):
-        """ステートに入る際に記録する"""
+        """ステートに入る際にログ出力する"""
         Logger.log(self._text, self._severity)
 ```
 
@@ -88,7 +88,7 @@ class LogState(EventState):
 > 注：userdataは、ステートマシンのレベルでも定義できます。
 
 `LogState` には `on_enter` メソッドと `execute` メソッドがあります。
-`on_enter` メソッドは、遷移によってステートに最初に入ったときに呼び出されます。 この場合、ステートは`Logger` クラスを使用して、端末、ログファイル、FlexBE UI にデータを記録 (log) します。
+`on_enter` メソッドは、遷移によってステートに最初に入ったときに呼び出されます。 この場合、ステートは`Logger` クラスを使用して、端末、ログファイル、FlexBE UI にデータをログ出力 (log) します。
 
 `execute`メソッドは `None` 以外の値を返すまで、指定された頻度で呼び出されます。
 返される値は、指定された有効な値（例えば、この場合は `done`）であることが期待されます（そして、実行時に強制されます）。
@@ -140,7 +140,7 @@ class WaitState(EventState):
 
 中央の画像は初期状態の `Print_Message` で、必要な自律性レベルのために出力がブロックされています。 
 システムは、次のステートへの遷移を有効にするために、楕円形のラベルの「done」遷移をクリックするようオペレータに要求します。
-「Behavior Feedback」の領域には、設定画面で元々定義されていた「Hello World！」メッセージを含む、オンボードビヘイビアから記録された出力が表示されます。 このメッセージは、オンボードノードが起動したオンボード端末ウィンドウにも記録されます。
+「Behavior Feedback」の領域には、設定画面で元々定義されていた「Hello World！」メッセージを含む、オンボードビヘイビアからのログ出力が表示されます。 このメッセージは、オンボードノードが起動したオンボード端末ウィンドウにもログ出力されます。
 「done」遷移をクリックした後、現在のアクティブなステートは、下の一番右の画像に示すように、`Wait_After_Logging`ステートに遷移します。
 これは待機期間中なので、出力遷移は灰色で表示され、中央の画像はアクティブな遷移が黄色で強調表示されています。
 オペレータはステートが終了するのを待つか、待機時間が終了する前にラベルの楕円をクリックしてステートを先取りし、「done」遷移を強制することを選択できます。 
