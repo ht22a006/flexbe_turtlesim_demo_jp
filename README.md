@@ -72,7 +72,7 @@ TurtleSimを起動します：
 
 `ros2 launch flexbe_onboard behavior_onboard.launch.py use_sim_time:=False`
 
-完全自律モードでデモ動作を開始します。
+完全自律モードでデモビヘイビアを開始します。
 
 `ros2 run flexbe_widget be_launcher -b "FlexBE Turtlesim Demo" --ros-args --remap name:="behavior_launcher" -p use_sim_time:=False`
 
@@ -123,7 +123,7 @@ FlexBEの重要な設計目標は、オペレータ（またはオペレータ�
 ##### *OCS*
 
 `ros2 run flexbe_mirror behavior_mirror_sm --ros-args --remap __node:="behavior_mirror" -p use_sim_time:=False`
-  * これはOCSコンピュータ上で実行され、`'flexbe/mirror/outcome'`トピックをリッスンし、ステート間のトランジションを追いかけます。
+  * これはOCSコンピュータ上で実行され、`'flexbe/mirror/outcome'`トピックをリッスンし、ステート間の遷移を追いかけます。
     これにより、OCSはロボット上で起きていることを「ミラー」することができます。
 
 `ros2 run flexbe_app run_app --ros-args --remap name:="flexbe_app" -p use_sim_time:=False`
@@ -159,7 +159,7 @@ FlexBEの重要な設計目標は、オペレータ（またはオペレータ�
 
 `InputState`を使用する場合、信頼できないデータからネットワークを保護するのはユーザー次第です。
 
-### FlexBEユーザーインターフェース（UI）による動作の制御
+### FlexBEユーザーインターフェース（UI）によるビヘイビアの制御
 
 FlexBE UIアプリケーションの*Behavior Dashboard*を使用して、上部中央のツールバーから*Load Behavior*を選択し、
 ドロップダウンメニューから`flexbe_turtlesim_demo_flexbe_behaviors`パッケージと`FlexBE Turtlesim Demo`ビヘイビアを選択します。
@@ -186,7 +186,7 @@ FlexBEは、階層型有限ステートマシン（HFSM）をサポートして�
   * [`teleport_absolute_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py) - *ブロックしない* サービスコールを使って、指定された位置に移動する。
   * [`timed_cmd_vel_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py) - 指定された更新レートを使用して、指令速度をパブリッシュする。
 
-    > 注：指定の状態更新レートは、ベストエフォートでしかありません。 FlexBEはリアルタイムコントローラではなく、
+    > 注：指定のステート更新レートは、ベストエフォートでしかありません。 FlexBEはリアルタイムコントローラではなく、
     > 正確なタイミングを必要としない低レート（10～100Hz）の周期的なモニタリングに適しています。
   
 例えば、[`timed_cmd_vel_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py)は、与えられた時間の間、一定の指令速度を[Twist](https://docs.ros2.org/latest/api/geometry_msgs/msg/TwistStamped.html)(前進速度と旋回速度)としてパブリッシュする`TimeCmdVelState`を実装しています。 `FlexBE Turtlesim Demo`のビヘイビアには、`EightMove`サブステートマシンコンテナが含まれています。 コンテナをダブルクリックするか、シングルクリックしてコンテナを開くようにリクエストして、そのコンテナを開くと、`TimedCmdVelState`の5つのステートのインスタンスが表示されます。 特定のパラメータ値は、FlexBE Editorにおいて特定のステートをクリックして設定します。「EightMove」ステートマシンと特定の 「LeftTurn」ステートの値を以下に示します。
@@ -206,12 +206,12 @@ FlexBEは、階層型有限ステートマシン（HFSM）をサポートして�
   <img src="img/monitoring_view.png" alt="Monitoring running behavior." width="45%">
 </p>
 
-8の字パターンを1周するために、「Eight」と書かれたトランジションの楕円をクリックします。
+8の字パターンを1周するために、「Eight」と書かれた遷移の楕円をクリックします。
 完了すると、*Operator* ステートに戻ります。 
 
 そこから以下を選択できます。
 
-#### 選択可能なトランジション
+#### 選択可能な遷移
 
 * ["Home"](docs/home_behavior.md) カメを中心に配置します。
 * ["Clear"](docs/clear_behavior.md) 軌跡を消去します。
@@ -220,17 +220,17 @@ FlexBEは、階層型有限ステートマシン（HFSM）をサポートして�
 * ["Pose"](docs/pose_behavior.md) オペレータが希望のポーズ位置を('[x, y]')として、または、ポーズを('[x, y, angle_in_radians]')として入力できるようにします。
 * "Quit" ステートマシンのビヘイビアを完了し、ランタイム・コントロールを終了します。
 
-上記のトランジション名をクリックすると、そのサブビヘイビアの詳細ページにジャンプします。
+上記の遷移名をクリックすると、そのサブビヘイビアの詳細ページにジャンプします。
 
-「Full」自律性を選択すると、システムは自動的に「Eight」トランジションを自律的に繰り返すことを選ぶことができます。
-以下に示すように、`OperatorDecisionState`の他のトランジションは、 「Full」自律性を必要とするように設定されていますが、「Eight」は 「High」自律性しか必要としません。「Full」自律性モードでは、この 「Eight」トランジションが自動的に選択されます。
+「Full」自律性を選択すると、システムは自動的に「Eight」の遷移を自律的に繰り返すことを選ぶことができます。
+以下に示すように、`OperatorDecisionState`の他の遷移は、 「Full」自律性を必要とするように設定されていますが、「Eight」は 「High」自律性しか必要としません。「Full」自律性モードでは、この 「Eight」の遷移が自動的に選択されます。
 これはOCSなしで最初に示したモードです。
 <p float="center">
   <img src="img/operator_decision_state.png" alt="Configuring the operator decision state." width="35%">
   <img src="img/full_autonomy_loops.png" alt="Autonomous behavior in Full autonomy." width="45%">
 </p>
 
-各トランジションにリンクされている説明を読み、上記のさまざまなビヘイビアを練習してください。
+各遷移にリンクされている説明を読み、上記のさまざまなビヘイビアを練習してください。
 
 ## その他の例
 
