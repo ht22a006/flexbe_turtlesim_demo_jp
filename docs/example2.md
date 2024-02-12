@@ -24,7 +24,7 @@ FlexBE システムを起動したら、FlexBE UI ダッシュボードから `E
 </export>
 ```
 
-この[`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)では、1つの引数(`target_time`)と2つの出力(`'done'`と`'failed'`)を指定しています。 
+この[`ExampleState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)では、1つの引数(`target_time`)と2つの出力(`'done'`と`'failed'`)を指定しています。 
 この例では `userdata` は使用しません。
 
 ```
@@ -78,7 +78,7 @@ def __init__(self, target_time):
 他のメソッドは再定義するか、デフォルトの `EventState` の `pass` 値のままにしておくことができます。 
 ある時点で、`execute` メソッドは `None` 以外の値を返すべきです。そうでなければ、ステートは永遠に実行されます。
 
-[`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)は全てのメソッドを再定義し、各遷移にログ出力を追加して、ステートのライフサイクル中にシステムがどのように各メソッドを実行するかを示します。
+[`ExampleState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)は全てのメソッドを再定義し、各遷移にログ出力を追加して、ステートのライフサイクル中にシステムがどのように各メソッドを実行するかを示します。
 
 ```python
 def on_enter(self, userdata):
@@ -159,7 +159,7 @@ def clock_time(self):
 > 注: 待たされる(blocking)呼び出しも可能ですが、`action` や 非同期サービスコースのような待たされない (non-blocking) 呼び出しを使用することをお勧めします。 
 `action` と `service` の取り扱いについては、["Home"](home_behavior.md)、["Clear"](clear_behavior.md)、["Rotate"](rotate_behavior.md) のTurtleSim デモの議論を見てください。
 
-[`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)の `execute` メソッドは `on_enter` からの時間を監視し、指定された更新頻度に基づいて *おおよその* 時間が経過したときに `done` を返します。
+[`ExampleState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)の `execute` メソッドは `on_enter` からの時間を監視し、指定された更新頻度に基づいて *おおよその* 時間が経過したときに `done` を返します。
 ```python
 def execute(self, userdata):
     """
@@ -227,5 +227,5 @@ def execute(self, userdata):
 > これらの変更は、ソースフォルダには表示されず、パッケージが再ビルドれると失われます。
 > 変更を保存するには、更新されたビヘイビア Python と xml マニフェストファイルをソースフォルダにコピーする必要があります。
 
-`例2`で実験した後、[例3](docs/example3.md)に進んで、ステートを「並列」に実行する`ConcurrencyContainter`を使った最初の階層型有限状態マシン(HFSM)を見てみましょう。
+`例2`で実験した後、[例3](../docs/example3.md)に進んで、ステートを「並列」に実行する`ConcurrencyContainter`を使った最初の階層型有限状態マシン(HFSM)を見てみましょう。
 
