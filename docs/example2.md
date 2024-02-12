@@ -1,28 +1,22 @@
-# Example 2 - State Implementation Life Cycle
+# 例2 - ステートの実装ライフサイクル
 
-The `Example 2` behavior constructs a simple state machine
-using three states.
+`例2`のビヘイビアは、3つのステートを使って単純なステートマシンを構築します。
 
-After starting the FlexBE system, load the `Example 2`
-behavior from the FlexBE UI dashboard.  The leftmost image below shows the 
-configuration dashboard after loading, and the center image shows the state machine with the 
-`ExampleState` properties shown.  The rightmost image shows the state machine after entering 
-the `A` example state. 
+FlexBE システムを起動したら、FlexBE UI ダッシュボードから `Example 2` ビヘイビアをロードします。 
+下の左端の画像はロード後の設定ダッシュボードを示しており、中央の画像は `ExampleState` プロパティが表示されたステートマシンを示しています。 
+一番右の画像は、例の`A`ステートに入った後のステートマシンを示しています。
 
-> Note: In low autonomy, you must click the `done` transition after the `Start` state to manually 
-> transition to the `A` state as the transition is blocked due to autonomy level.
+> 注：自律性が低い場合、自律性のレベルによって遷移がブロックされるため、
+> 手動で`A`ステートに遷移するには、`Start`ステートの後に`done`遷移をクリックする必要があります。
 
 <p float="center">
-  <img src="../img/example2_dashboard.png" alt="Example 2 loaded." width="30%">
-  <img src="../img/example2_sm_property.png" alt="Example 2 state machine with properties." width="30%">
-  <img src="../img/example2_a_state_enter.png" alt="Example 2 state machine running." width="30%">
+  <img src="../img/example2_dashboard.png" alt="読み込まれた例2。" width="30%">
+  <img src="../img/example2_sm_property.png" alt="例2のステートマシンとプロパティ。" width="30%">
+  <img src="../img/example2_a_state_enter.png" alt="実行中の例2のステートマシン。" width="30%">
 </p>
 
-In addition to the `LogState` from `Example 1`, this behavior uses the `ExampleState` provided as part of this repo in 
-`flexbe_turtlesim_demo_flexbe_states`.  You are free to develop your own FlexBE state implementations that inherit from
-`EventState`.  To let FlexBE find your states implementations,
-write them as a normal ROS 2 installed Python script, and specify
-that the package `export`s `<flexbe_states />`.
+`例1` の `LogState` に加えて、このビヘイビアでは、このリポジトリ `flexbe_turtlesim_demo_flexbe_states` の一部として提供されている `ExampleState` を使用します。 
+`EventState`を継承した独自のFlexBEステート実装を開発するのは自由です。 ステートの実装をFlexBE に見つけさせるには、通常の ROS 2 にインストールされた Python スクリプトとして記述し、パッケージが `<flexbe_states />` を`export`するように指定してください。
 ```xml
 <export>
     <build_type>ament_python</build_type>
@@ -30,30 +24,30 @@ that the package `export`s `<flexbe_states />`.
 </export>
 ```
 
-Our [`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) specifies one parameter (`target_time`) and two outputs (`'done'` and `'failed'`).  
-This example does NOT use `userdata`.
+この[`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)では、1つの引数(`target_time`)と2つの出力(`'done'`と`'failed'`)を指定しています。 
+この例では `userdata` は使用しません。
 
 ```
-List parameter values with double hyphens
--- target_time     float     Time which needs to have passed since the behavior started.
+「--」の後に引数を書いたものを一覧にします
+-- target_time     float     ビヘイビアが始まってから経過している必要がある時間。
 
-List labeled outcomes using the double arrow notation (must match constructor)
-<= done            Given time has passed.
-<= failed          Example for a failure outcome.
+「<=」の後にラベル付けされた結果を書いたものを一覧にします（コンストラクタと一致しなければならない）
+<= done            与えられた時間は過ぎた。
+<= failed          失敗の結果の例。
 ```
 
-These are specified in the `__init__` method, along with needed instance variables.
+これらは、必要なインスタンス変数とともに `__init__` メソッドで指定します。
 
 ```python
 def __init__(self, target_time):
-    """Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments."""
+    """親クラスのコンストラクタに対応する引数を渡して、outcomes、input_keys、output_keysを宣言する。"""
     super().__init__(outcomes=['done', 'failed'])
 
-    # Store state parameter for later use.
+    # 後で使用するためにステートの引数を保存する。
     self._target_wait_time = Duration(seconds=target_time)
 
-    # The constructor is called when building the state machine, not when actually starting the behavior.
-    # Thus, we cannot save the starting time now and will do so later.
+    # コンストラクタは、実際にビヘイビアを開始するときではなく、ステートマシンを構築するときに呼び出される。
+    # したがって、今は開始時刻を保存することはできず、後で保存することになる。
     self._state_start_time = None
     self._state_enter_time = None
     self._state_exit_time = None
@@ -61,30 +55,30 @@ def __init__(self, target_time):
     self._elapsed_time = Duration(nanoseconds=2**63 - 1)
 ```
 
-This state is tasked with waiting for the specified time after entering the state before returning done.  This state specifies
-two possible outcomes, but only one is actually achievable with this code as we do not anticipate actually encountering the failed case 
-with this demo.
-We define other instance attributes to hold data.
+このステートは、ステートに入った後、指定された時間待ってからdoneを返すのが仕事です。
+このステートには2つの可能な結果が指定されていますが、このコードで実際に達成できるのは1つだけです。
+データを保持するために、他のインスタンス属性を定義します。
 
-The state lifecycle follows:
-* `on_start` - the behavior and all sub-states are instantiated
-  * Use this to initialize things that should be started up
-  with the overall behavior.  This method is called after construction, but is separate from the `__init__` construction.
+ステートのライフサイクルは以下の通りです。
+* `on_start` - ビヘイビアとすべてのサブステートがインスタンス化されるとき呼び出されます。
+  * ビヘイビア全体と一緒に開始されるべきものを初期化するために、このメソッドを使います。 このメソッドはコンストラクタの後に呼び出されますが、`__init__`コンストラクタとは別のものです。
 
-* `on_enter` - the state becomes active after upstream transition
-* `execute` - called repeatedly until something other than a Python `None` value is returned
-  * Each "tic" of the `execute` method is periodic; a desired update tic rate value can be specified at both the state machine level and individual states if so desired. A default rate of 10Hz is used, but the overall desired value is set in the state machine configuration tab (discussed later).
+* `on_enter` - 上流からの遷移後にステートがアクティブになるとき呼び出されます。
 
-  > Note: In FlexBE, the tic rate is "best effort" and there are no real time performance guarantees.
+* `execute` - Python の `None` 値が以外を返されるまで繰り返し呼び出されます。
+  * `execute`メソッドの各「tic」は周期的なものです。必要であれば、ステートマシンレベルと個々のステートの両方で希望の更新tic頻度の値を指定できます。デフォルトの頻度は10Hzですが、全体的な希望値はステートマシン設定タブ（後述）で設定します。
 
-* `on_exit` is called once when the state returns something other than `None` from `execute`.
-* `on_stop` is called when the behavior is shutdown.
+  > 注：FlexBEでは、tic頻度は「ベストエフォート」であり、リアルタイムの性能保証はありません。
 
-Only an `execute` function is required to be overridden so that
-the state can return a value an terminate the state operation.
-The other methods can be overridden, or left as their default `pass` values from `EventState`.  At some point, the `enter` method should return a value other than `None` otherwise the state executes forever.
+* `on_exit` は、ステートが `execute` から `None` 以外を返したときに一度だけ呼び出されます。
 
-The [`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) overrides all of the methods, and adds logging to each transition to show how the the system executes each method during the state lifecycle.
+* `on_stop`はビヘイビアがシャットダウンされるときに呼び出されます。
+
+`execute`メソッドだけは、再定義（オーバライド）して、ステートの処理を終了して値を返せるようにする必要があります。
+他のメソッドは再定義するか、デフォルトの `EventState` の `pass` 値のままにしておくことができます。 
+ある時点で、`execute` メソッドは `None` 以外の値を返すべきです。そうでなければ、ステートは永遠に実行されます。
+
+[`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)は全てのメソッドを再定義し、各遷移にログ出力を追加して、ステートのライフサイクル中にシステムがどのように各メソッドを実行するかを示します。
 
 ```python
 def on_enter(self, userdata):
@@ -121,10 +115,9 @@ def on_stop(self):
             Logger.logerr(f"  entered at time={self.enter_time} seconds but never exited!")
 ```
 
-The `Logger.loginfo` (and `logwarn`, `logerr`, `logdebug`) log messages to the `.ros/log` file, the onboard terminal, and the FlexBE UI.
+`Logger.loginfo`（および `logwarn`、`logerr`、`logdebug`）は `.ros/log` ファイル、オンボード端末、FlexBE UI にメッセージをログ出力します。
 
-In this particular example state, we also provide several
-helper property methods to assist in data logging:
+このステートの例では、データのログ出力を支援するために、以下のいくつかの補助プロパティメソッドも提供しています。
 
 ```python
 @property
@@ -153,96 +146,86 @@ def clock_time(self):
     time = time_msg.sec % 3600 + time_msg.nanosec/S_TO_NS
     return f"{time:.3f}"
 ```
-Your state implementations are free to define additional helper methods as needed.
+ステートの実装では、必要に応じて追加の補助メソッドを自由に定義できます。
 
-A few key points:
-* The `EventState` super class maintains a reference to the ROS `node` of the behavior.  Here we use the `_node` attribute get the ROS clock instance.
-* Normal Python constructs including `for`-loops, `if-else`, and
-`try-except` blocks are valid within these methods with a few caveats:
-* Only `execute` should return a value
-* States should be fast acting "reactive" states.
-    * Offload longer running processes, such as planning, to separate nodes and preferably interface using regular `topics` and `actions`
-* Again, these methods should *NOT* be long `blocking` calls.  
+いくつかの重要なポイント
+* 親クラス `EventState` はビヘイビアの ROS `node` への参照を保持しています。 ここでは `_node` 属性を使用して ROS クロックのインスタンスを取得しています。
+* `for`ループ、`if-else`、`try-except`ブロックを含む通常の Python 構文は、いくつかの注意点を除いて、これらのメソッド内で有効です。
+* `execute`だけが値を返すべきです。
+* ステートは高速に動作する「反応が早い (reactive)」な状態でなければなりません。
+    * プランニングのような長く実行される処理は、別のノードに譲って、できれば通常の `topics` と `actions` を使ったインターフェースにします。
+* 繰り返しになりますが、これらのメソッドは長い「待たされる(blocking)」呼び出しであってはなりません。
 
-> Note: While blocking calls are possible, prefer to use non-blocking calls such as `actions` or asychronous service calls.  
-See the TurtleSim demo discussions for ["Home"](home_behavior.md), ["Clear"](clear_behavior.md), and ["Rotate"](rotate_behavior.md) 
-for more information about `action` and `service` handling.
+> 注: 待たされる(blocking)呼び出しも可能ですが、`action` や 非同期サービスコースのような待たされない (non-blocking) 呼び出しを使用することをお勧めします。 
+`action` と `service` の取り扱いについては、["Home"](home_behavior.md)、["Clear"](clear_behavior.md)、["Rotate"](rotate_behavior.md) のTurtleSim デモの議論を見てください。
 
-
-The [`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) `execute` function monitors the time since `on_enter`, and returns `done` when the *approximate* time has elapsed based on the designated update rate.
-
+[`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py)の `execute` メソッドは `on_enter` からの時間を監視し、指定された更新頻度に基づいて *おおよその* 時間が経過したときに `done` を返します。
 ```python
 def execute(self, userdata):
     """
-    Execute this method periodically while the state is active.
+    ステートがアクティブな間、このメソッドを周期的に実行する。
 
-    Main purpose is to check state conditions and trigger a corresponding outcome.
-    If no outcome is returned, the state will stay active.
+    主な目的は、ステートの条件をチェックし、対応する結果をトリガーすることである。
+    結果が返されない場合、状態はアクティブのままである。
     """
     if self._return is not None:
-        # We must be blocked by autonomy level.
-        # Here we will just return the prior outcome and not recalculate
-
-        # Local info is NOT sent to the UI, and only shown in logs and terminal
+        # 自律性レベルによってブロックされなければならない。
+        # ここでは, 以前の結果を返すだけであり, 再計算は行わない.
+        # ローカル情報はUIに送信されず、ログとターミナルにのみ表示される。
         Logger.localinfo(f"execute blocked for '{self._name}' state ({self.path}) @ {self.clock_time} "
                     f"- use prior return code={self._return}")
         return self._return
 
-    # Normal calculation block
+    # 通常の計算ブロック
     try:
         self._elapsed_time = ExampleState._node.get_clock().now() - self._state_enter_time
         if self._elapsed_time >= self._target_wait_time:
             Logger.loginfo(f"execute for '{self._name}' state ({self.path}) @ {self.clock_time} "
                            f"- done waiting at {self.elapsed_seconds} seconds.")
             self._return = 'done'
-            return 'done'  # One of the outcomes declared above.
+            return 'done'  # 上記で宣言した結果のひとつ
     except Exception:  # pylint:disable=W0703
-        # Something went wrong
+        # 何かが間違っていた場合
         Logger.logerr(f"execute for '{self._name}' state ({self.path}) @ {self.clock_time} "
                        f"- something went wrong after {self.elapsed_seconds} seconds.")
         self._return = 'failed'
         return 'failed'
 
-    # Local info is NOT sent to the UI, and only shown in logs and terminal
+    # ローカル情報はUIには送信されず、ログとターミナルにのみ表示される。
     Logger.localinfo(f"execute for '{self._name}' state ({self.path}) @ {self.clock_time} "
                     f"- {self.elapsed_seconds} seconds since start.")
-    return None  # This is normal behavior for state to continue executing
+    return None  # これは、状態が実行を継続するための正常な動作である。
 ```
 
-A few key points about the `execute` method:
-* We track any previous `_return` value in case the operator has the exit transition blocked due to an autonomy
-level.  
-If the transition is blocked, the state continues to call `execute`.  
-So, the state designer can choose to re-do the execute, or just return
-the previous value depending on the specific implementation
- design.  This flexibility is left to the state developer.  
-But, be aware that the the `execute` is called if a transition is blocked.
-We will guide you through this later in the example demonstration.
-* This example includes a significant amount of logging to console; this is
-atypical, especially in an execute block, as it slows the system down due to the computational cost of I/O.
-* The code demonstrates one possible use of exception handling and returning a `failed` outcome,
-although we do not expect this block to be exercised in this example.
+`execute`メソッドに関するいくつかの重要なポイントは以下の通りです。
+* オペレータが、自律レベルのために終了遷移をブロックされた場合に備えて、以前の `_return` 値を追跡します。 
+遷移がブロックされた場合、ステートは `execute` を呼び出し続けます。 
+そのため、ステート設計者は特定の実装設計に応じて、実行をやり直すか、前の値を返すかを選択できます。 この柔軟性はステート開発者に任されています。 
+しかし、トランジションがブロックされると `execute` が呼び出されることに注意してください。
+これについては後ほどデモの例で説明します。
+* この例では、コンソールへの大量のログ出力が含まれています。これは、特に実行ブロックでは、I/Oの計算コストのためにシステムの速度を低下させるので、非定型的なものです。
+* このコードでは、例外処理と `failed` 結果の返り値の使い方の一例を示していますが、この例でこのブロックを使うことは想定していません。
 
-Now, start the execution in `Low` autonomy.
+さて、自律性「Low」で実行を開始する。
 
-During normal execution, the `Logger.localinfo` method call above only logs to the `.ros/log` file and onboard terminal, it does NOT send 
-a message to the FlexBE UI.  Thus, only the final return values are shown at the FlexBE console.  The leftmost image 
-below shows the onboard terminal output as the execute method continues to be called until the final return value, then `on_exit`
-is called.  As the required autonomy level for this outcome is `off`, the system exits the behavior and `on_stop` is called for all
-states.  The rightmost image shows the final output on the FlexBE UI as after the behavior completes and the system is ready for more.
+通常の実行中、上記の `Logger.localinfo` メソッド呼び出しは `.ros/log` ファイルとオンボード端末にログ出力するだけで、FlexBE UI にメッセージを送信しません。 
+したがって、FlexBE コンソールには最終的な戻り値のみが表示されます。 
+下の1番目の画像は、`execute` メソッドが最終的な戻り値まで呼び出され続け、その後 `on_exit` が呼び出されたときのオンボード端末の出力を示しています。
+この結果に必要な自律性レベルは `off` であるため、システムはビヘイビアを終了し、すべてのステートに対して `on_stop` が呼び出されます。
+下の2番目の画像は、ビヘイビアが完了し、システムの準備が整った後のFlexBE UIの最終出力を示しています。
 
 <p float="center">
-  <img src="../img/example2_onboard.png" alt="Example 2 log messages." height="30%">
-  <img src="../img/example2_complete.png" alt="Example 2 log messages." height="30%">
+  <img src="../img/example2_onboard.png" alt="例2 オンボード端末の出力" height="30%">
+  <img src="../img/example2_complete.png" alt="例2 FlexBE UIの最終出力" height="30%">
 </p>
 
-For the next run, try setting the autonomy level higher to "High" or "Full", which will allow the behavior to run to completion without the operator needed to click "done" after the log state, or to "Off" which will require the operator to confirm every transition.
+次の実行では、自律性レベルを「High」または「Full 」に高く設定してみてください。こうすると、ログステートの後にオペレータが「done」をクリックしなくても、ビヘイビアが完了するまで実行されます。「Off」に設定すると、オペレータがすべての遷移を確認する必要があります。
 
-Also try to force early transitions by clicking on the transition label oval.  Try editing the state machine and modifying the configuration messages or wait times on the dashboard.  You will need to resave the behavior.  
+また、遷移ラベルの楕円をクリックして、早い遷移を強制的に実行してみてください。 ステートマシンを編集し、ダッシュボードの設定メッセージまたは待機時間を変更してみてください。 ビヘイビアを再保存する必要があります。
 
-> Note: Currently behaviors are saved under the workspace `install` folder of the OCS machine.  
-> These changes are not visible in the source folder, and will be lost if the package is rebuilt.
-> To save any changes, the updated behavior Python and xml manifest files must be copied to the source folder.
+> 注：現状では、ビヘイビアは OCS マシンのワークスペースの `install` フォルダの下に保存されています。 
+> これらの変更は、ソースフォルダには表示されず、パッケージが再ビルドれると失われます。
+> 変更を保存するには、更新されたビヘイビア Python と xml マニフェストファイルをソースフォルダにコピーする必要があります。
 
-After experimenting with `Example 2`, continue on to [Example 3](docs/example3.md) for a look at our first Hierarchical Finite State Machine (HFSM) using a `ConcurrencyContainter` that executes states in "parallel".
+`例2`で実験した後、[例3](docs/example3.md)に進んで、ステートを「並列」に実行する`ConcurrencyContainter`を使った最初の階層型有限状態マシン(HFSM)を見てみましょう。
 
