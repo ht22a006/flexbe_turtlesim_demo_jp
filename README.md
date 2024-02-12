@@ -46,7 +46,7 @@ FlexBEには、*オンボードの* ロボット制御ビヘイビア実行部�
 
 ----
 
-FlexBE機能の詳細については、[Examples](docs/examples.md)を参照してください。
+FlexBE機能の詳細については、[例](docs/examples.md)を参照してください。
 
 FlexBEの歴史と開発の詳細、およびビヘイビアの読み込みと起動の詳細については、メインの[FlexBE tutorials]を参照してください。
 
@@ -195,7 +195,7 @@ FlexBEは、階層型有限ステートマシン（HFSM）をサポートして�
   <img src="img/timed_cmd_vel.png" alt="'EightMove' ステートマシンコンテナ内の LeftTurn ステートのパラメータ。" width="45%">
 </p>
 
-その他のタイプのコンテナについては、詳細な[Examples](docs/examples.md)で説明しています。
+その他のタイプのコンテナについては、詳細な[例](docs/examples.md)で説明しています。
 
 ----
 
@@ -234,7 +234,7 @@ FlexBEは、階層型有限ステートマシン（HFSM）をサポートして�
 
 ## その他の例
 
-FlexBEの理論と実装についてのより深い議論については、詳細な[Examples](docs/examples.md)を参照してください。
+FlexBEの理論と実装についてのより深い議論については、詳細な[例](docs/examples.md)を参照してください。
 
 ----
 
