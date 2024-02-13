@@ -1,9 +1,8 @@
-# Example 5 - Priority Containers
+# 例5 - 優先コンテナ
 
-A `PriorityContainer` works with a `ConcurrencyContainer` and is designed 
-to take priority over other states while it is active.
+`PriorityContainer`は `ConcurrencyContainer`と一緒に動作し、アクティブな間は他の状態よりも優先されるように設計されています。
 
-The `Example 5` does not exist yet.  It is on the @todo list.
+`例5`はまだ存在しません。 todoリストにあります。
 
 #### TODO
 
