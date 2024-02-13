@@ -1,85 +1,91 @@
-# Example 3 - Hierarchical Finite State Machines (HFSM) with ConcurrencyContainers
+# 例3 - ConcurrencyContainersによる階層的有限ステートマシン（HFSM）
 
-The `Example 3` behavior constructs a HFSM with a `ConcurrencyContainer`(https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/core/concurrency_container.py).
+`例3`のビヘイビアは、[`ConcurrencyContainer`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/core/concurrency_container.py)を使ってHFSMを構築します。
 
-
-After starting the FlexBE system, load the `Example 3`
-behavior from the FlexBE UI dashboard.  The leftmost image below shows the 
-configuration dashboard after loading, and the right image shows the top-level state machine with the 
-`ConcurrencyContainer`s shown.  Click on any image to see the high-resolution version.
+FlexBE システムを起動したら、FlexBE UI ダッシュボードから `Example 3` ビヘイビアを読み込みます。
+下の左端の画像は読み込んだ後の設定ダッシュボードを示しており、右の画像は `ConcurrencyContainer` が表示された最上位のステートマシンを示しています。
+画像をクリックすると高解像度版が表示されます。
 
 <p float="center">
-  <img src="../img/example3_dashboard.png" alt="Example 3 loaded." width="30%">
-  <img src="../img/example3_top_level_sm.png" alt="Example 3 top-level state machine." width="30%">
+  <img src="../img/example3_dashboard.png" alt="読み込まれた例3。" width="30%">
+  <img src="../img/example3_top_level_sm.png" alt="例3の上位のステートマシン。" width="30%">
 </p>
 
-In FlexBE there are three types of "containers" which hold other state machines: `StateMachine`, `ConcurrencyContainer`, and `PriorityContainer`.  In this example, we will use a `ConcurrencyContainer` as shown in the right hand image above.
-`ConcurrencyContainers` execute all of their sub-states on the same FlexBE "tic" of the execute cycle, but they do not execute in actual concurrent time or in true "parallel" fashion.  Interaconnections are not allowed within a concurrent container; however, a `ConcurrencyContainer` may contain other containers will more complex state machines as individual hierarchical states.
+FlexBEには、他のステートマシンを保持する3種類の「コンテナ」があります。
+それは、 `StateMachine`、`ConcurrencyContainer`、`PriorityContainer` です。
+この例では、上の右側の画像のように `ConcurrencyContainer` を使用します。
+`ConcurrencyContainer`は、実行サイクルの同じFlexBEの「tic」ですべてのサブステートを実行しますが、実際の同時実行や真の「並列」実行は行いません。 
+同時実行コンテナ内では相互接続は許可されません。
+しかし、`ConcurrencyContainer` は他のコンテナを個々の階層ステートとして、より複雑なステートマシンを含むことができます。
 
-In Example 3, the top-level state machine uses four `LogState` states named `Start`, `EnterAnd`, `Done`, and `Failed`.  
-The `Start` and `Done` states use the private configuration variables for their messages, while `EnterAnd` and `Failed` define strings
-in their state property edit boxes.  The `WaitState` instance named `Delay` uses a `1.0` second wait time parameter.  
-Single clicking on either of the `Concurrent` containers (the state implementation is a `ConcurrencyContainer`, but the label says `Concurrent`), will open up their state property editor pane as shown in the leftmost image below.  
-The property pane for `ConcurrencyContainer`s allows one to specify the specific outcomes that are allowed, and to configure `userdata` key names for the container.
+例3では、最上位のステートマシンは `Start`、`EnterAnd`、`Done`、`Failed` の4つの `LogState` ステートを使用しています。 
+`Start` と `Done` ステートでは、メッセージにプライベート設定変数を使用し、一方、`EnterAnd` と `Failed` ステートでは、ステートプロパティエディットボックスに文字列を定義します。 
+`WaitState`のインスタンスである `Delay` は `1.0` 秒の待ち時間パラメータを使用します。 
+`Concurrent` コンテナ（ステートの実装は `ConcurrencyContainer` であるが、ラベルには `Concurrent` と表示されている）のいずれかをシングルクリックすると、下の左端の画像のようにステートのプロパティエディタペインが表示されます。 
+`ConcurrencyContainer`のプロパティ領域では、許可される特定の結果を指定したり、コンテナの `userdata` キー名を設定したりすることができます。
 
-From the property pane you can select "Open this container", or you may directly open by
-double clicking on the `Concurrent`  container box in the state machine.  The open container view shows the state machines under the top-level in the HFSM.  The two (sub-)state machines are shown below.
+プロパティ領域から「Open this container」を選択するか、ステートマシンのコンテナボックス `Concurrent`をダブルクリックして直接開くことができます。 コンテナビューを開くと、HFSM のトップレベルの下にあるステートマシンが表示されます。 
+2つの（サブ）ステートマシンを以下に示します。
 
 <p float="center">
-  <img src="../img/example3_concurrent_or_property.png" alt="Example 3 Concurrent OR container properties." width="30%">
-  <img src="../img/example3_concurrent_or.png" alt="Example 3 Concurrent OR state machine." width="30%">
-  <img src="../img/example3_concurrent_and.png" alt="Example 3 Concurrent AND state machine." width="30%">
+  <img src="../img/example3_concurrent_or_property.png" alt="例3 Concurrent ORコンテナのプロパティ。" width="30%">
+  <img src="../img/example3_concurrent_or.png" alt="例3 Concurrent ORステートマシン。" width="30%">
+  <img src="../img/example3_concurrent_and.png" alt="例3 Concurrent ANDステートマシン。" width="30%">
 </p>
 
-As shown above in the leftmost image, the `Concurrent_OR` container has two instances of the `ExampleState` labeled `A` and `B`.
-The container outcomes are connected separatedly so that either `A` or `B` returning `done` will cause the container to return `finished`.
+上の左端の画像のように、`Concurrent_OR` コンテナには `A` と `B` というラベルの付いた `ExampleState` のインスタンスが2つ存在しています。
+`A` または `B` が `done` を返すと、コンテナは `finished` を返すように、コンテナの結果 (outcome)は別々に接続されています。
 
-As shown above in the rightmost image, the `Concurrent_AND` container has two instances of the `ExampleState` labeled `C` and `D`.
-Both of the `done` outomes from `C` and `D` are connected to a single container `finished` outcome; thus, both `C` and `D` must return
-`done` before the container returns `finished` (i.e., `finished` if both `C` *and* `D` are `done`); any `failed` outcome will cause the container to return `failed` (i.e., failed if `C` *or* `D` fails).
+上の一番右の図に示すように、`Concurrent_AND` コンテナには `C` と `D` というラベルの付いた`ExampleState` インスタンスが2つ存在しています。
+したがって、コンテナが `finished` を返す前に `C` と `D` の両方が `done` を返す必要があります（つまり、`C` *と* `D` の両方が `done` であれば `finished` となります）。
+どのような `failed` 結果でも、コンテナは `failed` を返します（つまり、`C` *または* `D` が失敗した場合は失敗したことになります）。
 
-The "Runtime Control" panel allows the operator to adjust the wait times as shown in the leftmost image below.  For this example, `waiting_time_a` is set to `4.0` seconds, and `waiting_time_b` is set to `2.0` seconds.  Thus, state `B` will return `done` first, which will preempt state `A` after approximately 2.0 seconds.  Likewise, `waiting_time_c` is set to `4.0` seconds, and `waiting_time_d_` is set to `2.0` seconds.  State `D` will finish execution and call `on_exit` after approximately 2 seconds, but state `C` will continue to execute for another 2 seconds.
+「Runtime Control」パネルでは、下の左端の画像のように待ち時間を調整することができます。 
+この例では、`waiting_time_a` を `4.0` 秒に設定し、`waiting_time_b` を `2.0` 秒に設定しています。 
+そのため、ステート `B` は最初に `done` を返し、約2.0秒後のステート `A` を無効にします。
+同様に、`waiting_time_c` は `4.0` 秒に設定され、`waiting_time_d` は `2.0` 秒に設定さしています。
+ステート `D` は約 2 秒後に実行を終了して `on_exit` を呼び出しますが、ステート `C` はさらに 2 秒間実行を続けます。
 
 <p float="center">
-  <img src="../img/example3_runtime.png" alt="Example 3 runtime start configuration." width="30%">
-  <img src="../img/example3_start.png" alt="Example 3 awaiting manual transition after Start." width="30%">
-  <img src="../img/example3_or_progress.png" alt="Example 3 Concurrent_OR in progress." width="30%">
+  <img src="../img/example3_runtime.png" alt="例3 ランタイム開始の設定。" width="30%">
+  <img src="../img/example3_start.png" alt="例3 開始後の手動遷移の待機中。" width="30%">
+  <img src="../img/example3_or_progress.png" alt="例3 進行中のConcurrent_OR。" width="30%">
 </p>
 
-The onboard terminal logging includes the `Logger.localinfo` from `execute` method, and shows the alternating "concurrent" 
-tics until one state in the concurrent container executes.  Then the behavior depends on how the outputs are connected. 
-The leftmost image below shows the behavior of the `Concurrent_OR` container, and the rightmost image shows the behavior 
-of the `Concurrent_AND` container given the respective 4.0 and 2.0 second wait times for this example.
+オンボード端末のログには、`execute`メソッドの`Logger.localinfo`が含まれており、同時実行コンテナ内の1つのステートが実行されるまで、交互に「同時実行」ticを表示します。 
+そして、出力がどのように接続されているかによってビヘイビアが異なります。
+下の左端の画像は `Concurrent_OR` コンテナの動作を示しており、右端の画像は `Concurrent_AND` コンテナの動作を示しています。この例では 4.0 秒と 2.0 秒の待ち時間が設定されています。
 
 <p float="center">
-  <img src="../img/example3_onboard_or.png" alt="Example 3 onboard terminal logging during Concurrent_OR" width="45%">
-  <img src="../img/example3_onboard_and.png" alt="Example 3 onboard terminal logging during Concurrent_AND." width="45%">
+  <img src="../img/example3_onboard_or.png" alt="例3 Concurrent_OR中のオンボード端末ログ。" width="45%">
+  <img src="../img/example3_onboard_and.png" alt="例3 Concurrent_AND中のオンボード端末ログ。" width="45%">
 </p>
 
-> Note: The current release version of FlexBE UI (3.x.x) only shows the first state in the `Concurrent` container.
-> This can cause issues where that state exits first.  A development version shows the deepest active state, and updates 
-> as the internal states change.  I suggest you change the relevant wait times and compare the UI for the `Concurrent_AND` container.
+> 注: FlexBE UI の現在のリリースバージョン（3.x.x）では、`Concurrent` コンテナ内の最初のステートのみが表示されます。
+> これは、そのステートが最初に終了する問題を引き起こす可能性があります。 
+> 開発バージョンでは、最もアクティブなステートが表示され、内部ステートが変化すると更新されます。 関連する待ち時間を変更し、`Concurrent_AND`コンテナのUIを比較することをお勧めします。
 
-Try running the behavior at varying autonomy levels.
+さまざまな自律性レベルでビヘイビアを実行してみてください。
 
-Now, let us look at the behavior state machine implementation code a bit more.
-This behavior is defined in [`example_3_sm.py`](flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/example_3_sm.py).  All of the code (listed below) is generated by the FlexBE UI state machine editor and saved via the dashboard when the behavior was first created (and subsequently modified.)  
-The file name and class name `Example3SM` are derived from the assigned behavior name `Example 3` from when it is first created.
-The behavior implementation class inherits from the [`Behavior` class](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/behavior.py).  
+さて、ビヘイビアステートマシンの実装コードをもう少し見てみましょう。
+このビヘイビアは[`example_3_sm.py`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/example_3_sm.py)で定義されています。
+すべてのコード（以下に列挙）はFlexBE UIステートマシンエディタによって生成され、ビヘイビアが最初に作成されたとき（そしてその後修正されたとき）にダッシュボード経由で保存されます。 
+ファイル名とクラス名 `Example3SM` は、最初に作成されたときに割り当てられたビヘイビア名 `Example 3` から派生したものです。
+ビヘイビアの実装クラスは[`Behavior`クラス](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/behavior.py)を継承しています。
 
-> Note: This links to the source version.  Any edits or changes are saved in the `install` folder.
+> 注：これはソースバージョンへのリンクです。 編集や変更は`install`フォルダに保存されます。
 
-The operatorable adjustable parameters are defined and initialized using the `add_parameter` instance method of the `Behavior` class.
-Any states used in the instance are initialized with the ROS node instance reference.  These values are communicated with the `TODO - FIX THIS`(todo_fix_this_link) message from the OCS UI.  In contrast the private configuration variables are defined locally in the `create` method, and are not communicated from the OCS side.
+操作可能な調整可能パラメータは `Behavior` クラスの `add_parameter` インスタンスメソッドを使用して定義され、初期化されます。
+インスタンスで使用される全ての状態は、ROSノードのインスタンス参照で初期化されます。 これらの値は OCS UI から `TODO - FIX THIS`(todo_fix_this_link) メッセージで通知されます。 一方、プライベートな設定変数は `create` メソッドでローカルに定義され、OCS 側からは通知されません。
 
 ```python
 class Example3SM(Behavior):
     """
-    Define Example Concurrent Behavior.
+    並行ビヘイビアの例の定義。
 
-    This is a simple example for a behavior using custom example_state that logs each function in life cycle.
+    これは、ライフサイクルの各関数をログに記録するカスタムexample_stateを使用したビヘイビアの簡単な例です。
     
-    Here we demonstrate concurrent behaviors with both OR and AND style exit conditions.
+    ここでは、ORとANDスタイルの両方の終了条件を持つ並行ビヘイビアを示します。
     
     """
 
@@ -104,20 +110,13 @@ class Example3SM(Behavior):
 ```
 
 
-The state machine is defined and created using the `create` instance method.
-First each container is instantiated, and their substates are added.
-Then the top-level state machine is instantiated, and its internal states are added, including 
-the container state machines, which are themselves state instances.
-The state definitions include both the transition target and required autonomy level
-(e.g. the `Start` state `done` outcome transitions to `Concurrent_OR`, and 
-requires `Low` autonomy).
-Notice that some states have their package name prepended 
-(e.g. `flexbe_turtlesim_demo_flexbe_states__ExampleState`);
-this occurs automatically if the same state name occurs multiple times in a workspace.
+ステートマシンは `create` インスタンスメソッドを使用して定義・作成されます。
+最初に各コンテナがインスタンス化され、それらのサブステートが追加されます。
+次に、最上位のステートマシンがインスタンス化され、コンテナのステートマシンを含む内部の状態が追加されます。
+ステートの定義には、遷移先と必要な自律性のレベルが含まれる（例えば、`Start` 状態の `done` 結果は `Concurrent_OR` に遷移し、`Low` 自律性が必要）。
+状態によっては、パッケージ名が先頭に付加されているものがあります（例：`flexbe_turtlesim_demo_flexbe_states__ExampleState`）。
 
-The comment lines with x- and y-coordinates (e.g., `# x: 500 y:78`) are used to record state locations or transition 
-arc coordinates in the UI state machine editor.  Thus this file serves as both the executable Python script, 
-and the UI graphics source.
+x座標とy座標のコメント行（例：`# x: 500 y:78`）は、UIステートマシンエディタでステートの位置や遷移アークの座標を記録するために使用されます。 したがって、このファイルは実行可能なPythonスクリプトとUIグラフィックスのソースの両方の役割を果たします。
 
 
 ```python
@@ -220,4 +219,4 @@ and the UI graphics source.
         return _state_machine
 ```
 
-After experimenting with `Example 3`, continue on to [Example 4](docs/example4.md) for a look at our second Hierarchical Finite State Machine (HFSM) that includes this entire `Examaple 3` behavior as a sub-behavior using a `StateMachine` container.
+`例3`で実験した後、[例4](../docs/example4.md)に進んで、この`例3`のビヘイビア全体を、`StateMachine`コンテナを使ったサブビヘイビアとして含む、2番目の階層型有限ステートマシン(HFSM)を見てください。
