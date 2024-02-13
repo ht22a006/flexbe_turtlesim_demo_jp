@@ -1,25 +1,23 @@
-# Example 4 - Behavior composition - Using behaviors in other behaviors
+# 例4 - ビヘイビア構成 - ビヘイビアを他のビヘイビアで使用する
 
-The `Example 4` behavior constructs a three-layer HFSM with the `Example 3` behavior inside a `Behavior` container that contains multiple [`ConcurrencyContainer`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/core/concurrency_container.py) states each with multiple `ExampleState`
+`例4` のビヘイビアは、複数の [`ConcurrencyContainer`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/core/concurrency_container.py) ステートと複数の `ExampleState` を持つ `Behavior` コンテナの中に、`例3` のビヘイビアを含む 3 層の HFSM を構築します。
 
 <p float="center">
-  <img src="../img/example4_editor.png" alt="Example 4 editor view." width="40%">
-  <img src="../img/example3_top_level_sm.png" alt="Example 3 top-level state machine." width="40%">
+  <img src="../img/example4_editor.png" alt="例4 エディタビュー。" width="40%">
+  <img src="../img/example3_top_level_sm.png" alt="例3 最上位のステートマシン。" width="40%">
 </p>
 
-Use the "Add Behavior" action shown circled in top of leftmost image; this will open the normal "Load Behavior" dialog.
-From there, you can modify the local state name for the behavior container state.
+「Add Behavior」を使用すると、通常の「Load Behavior」ダイアログが開きます。
+このダイアログで、ビヘイビア コンテナ ステートのローカル ステート名を変更できます。
 
-Using the state editor view shown in the leftmost image above, you can modify the state machine parameters 
-defined for the state machine (as defined in ["Example 3"](example3.md)).
-In this example, we modified the `waiting_time_a`.
+上の一番左の画像に示されているステート エディタ ビューを使って、ステートマシンに定義されているステートマシン パラメータ（[「例3」](example3.md)で定義されているもの）を変更することができます。
+この例では、`waiting_time_a`を修正しました。
 
-This ability to compose existing behaviors to build more complex behaviors is a powerful feature of FlexBE.
+既存のビヘイビアを組み合わせて、より複雑なビヘイビアを構築できるこの機能は、FlexBEの強力な特徴です。
 
-While this three-layer HFSM example is relatively trivial for illustrative purposes, FlexBE has been used to develop much 
-more complex behaviors using behavior composition.
+この3層のHFSMの例は、説明のための比較的些細なものですが、FlexBEはビヘイビア合成を使用して、はるかに複雑なビヘイビアを開発するために使用されています。
 
-For some examples, see these publications:
+いくつかの例については、以下の文献を参照してください。
 
 - Stefan Kohlbrecher et al. ["A Comprehensive Software Framework for Complex Locomotion and Manipulation Tasks Applicable to Different Types of Humanoid Robots."](http://dx.doi.org/10.3389/frobt.2016.00031) Frontiers in Robotics and AI 3 (2016): 31.
 
