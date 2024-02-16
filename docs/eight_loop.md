@@ -1,22 +1,19 @@
-# Turtlesim Demo Figure 8 Loop Behavior
+# Turtlesim Demo 8の字ループ ビヘイビア
 
-The "Eight" sub-behavior is implemented as an embedded state machine using 
-a `StateMachine` container type in FlexBE.
+「Eight」サブビヘイビアは、FlexBEの`StateMachine`コンテナ型を使って組み込みステートマシンとして実装されています。
 
-New states -- including basic states, containers, and entire behaviors -- are added in the editor view.
+新しいステート（基本ステート、コンテナ、ビヘイビア全体を含む）は、エディター・ビューに追加されます。
 
 <p float="center">
-  <img src="img/editor_view_add.png" alt="State machine editor view adding a container." width="45%">
-  <img src="img/timed_cmd_vel.png" alt="LeftTurn state parameters within the 'EightMove' state machine container." width="45%">
+  <img src="../img/editor_view_add.png" alt="コンテナを追加しているステートマシンエディタのビュー。" width="45%">
+  <img src="../img/timed_cmd_vel.png" alt="「EightMove」ステートマシンコンテナの中のLeftTurnステートのパラメータ。" width="45%">
 </p>
 
-Here we demonstrate adding a new `State machine` container type to the existing state machine.
+ここでは、既存のステートマシンに新しい`State machine`コンテナタイプを追加する例を示します。
 
-In the given `FlexBE Turtlesim Demo` behavior we added the container, then edited its name to be "EightMove" instead of "Container".
+与えられた`FlexBE Turtlesim Demo`のビヘイビアでは、コンテナを追加し、その名前を「Container」ではなく、「EightMove」に編集しました。
 
-Inside the "EightMove" container, shown in the rightmost image above, we have defined a simple state machine that is just a sequence of 
-[`TimeCmdVelState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py) instances.
-
+「EightMove」コンテナの中で、[`TimedCmdVelState`](../docs/flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py)インスタンスの並びである単純なステートマシンを定義しました。
 
 ```python
 rom rclpy.duration import Duration
@@ -27,59 +24,59 @@ from geometry_msgs.msg import Twist
 
 class TimedCmdVelState(EventState):
     """
-    This state publishes an open loop constant Twist command based on parameters.
+    このステートは、パラメータに基づいてオープンループ定数であるTwistコマンドをパブリッシュする。
 
-    -- target_time          float     Time which needs to have passed since the behavior started.
-    -- velocity             float     Body velocity (m/s)
-    -- rotation_rate        float     Angular rotation (radians/s)
-    -- cmd_topic            string    Topic name of the robot velocity command (default: 'cmd_vel')
-    -- desired_rate         float     Desired state update rate (default: 50 Hz)
-    <= done                 Given time has passed.
+    -- target_time          float     動作が始まってから経過している必要がある時間。
+    -- velocity             float     車体速度（m/s）
+    -- rotation_rate        float     角速度 (rad/s)
+    -- cmd_topic            string    ロボット速度コマンドのトピック名 (デフォルト: 'cmd_vel')
+    -- desired_rate         float     希望する状態更新頻度（デフォルト：50Hz）
+    <= done                 与えられた時間が過ぎた。
     """
 
     def __init__(self, target_time, velocity, rotation_rate, cmd_topic='cmd_vel', desired_rate=50):
-        """Declare outcomes, input_keys, and output_keys by calling the super constructor with the corresponding arguments."""
+        """親クラスのコンストラクタに対応する引数を渡して、outcomes、input_keys、output_keysを宣言する。"""
         super().__init__(desired_rate=desired_rate, outcomes=['done'])
 
-        # Store state parameter for later use.
+        # 後で使用するためにステートの引を保存する。
         self._target_time = Duration(seconds=target_time)
 
-        # The constructor is called when building the state machine, not when actually starting the behavior.
-        # Thus, we cannot save the starting time now and will do so later.
+        # コンストラクタは、実際に動作を開始するときではなく、ステートマシンを構築するときに呼び出される。
+        # したがって、今は開始時刻を保存することはできず、後で保存することになる。
         self._start_time = None
 
-        self._return = None  # Track the outcome so we can detect if transition is blocked
+        self._return = None  # outcomeを追跡することで、遷移が待たされているかどうかを検出できる。
 
         self._twist = Twist()
         self._twist.linear.x = velocity
         self._twist.angular.z = rotation_rate
         self._cmd_topic = cmd_topic
 
-        # FlexBE uses "proxies" for publishers, subscribers, and service callers
-        # so that all states in a behavior can share a single subscription/publisher
+        # FlexBEはパブリッシャー、サブスクライバー、サービス呼び出し元に対して「プロキシ」を使用し、
+        # ビヘイビア内のすべてのステートが単一のサブスクリプション/パブリッシャーを共有できるようにする。
         ProxyPublisher.initialize(TimedCmdVelState._node)  # the class must know the behavior node
         self._pub = ProxyPublisher()
         self._pub.createPublisher(cmd_topic, Twist)
 
     def execute(self, userdata):
-        """Call this method periodically while the state is active."""
+        """ステートがアクティブな間、このメソッドを周期的に呼び出す。"""
         if self._return:
-            # We have completed the state, and therefore must be blocked by autonomy level
-            # Stop the robot, but and return the prior outcome
+            # われわれはステートを完成させたのだから、自律性レベルによってブロックされなければならない。
+            # ロボットを停止させ、事前の結果を返す。
             if self._cmd_topic:
                 self._pub.publish(self._cmd_topic, Twist())
 
             return self._return
 
         if self._node.get_clock().now().nanoseconds - self._start_time.nanoseconds > self._target_time.nanoseconds:
-            # Normal completion, do not bother repeating the publish
-            # We won't bother publishing a 0 command unless blocked (above)
-            # so that we can chain multiple motions together
+            # 正常終了、パブリッシュを繰り返す必要はない
+            # 複数のモーションを連鎖させることができるように、
+            # ブロックされない限り（上記）、わざわざ0コマンドを発行することはない
             self._return = 'done'
             Logger.localinfo(f"{self._name} : returning 'done'")  # For initial debugging
             return 'done'
 
-        # Normal operation
+        # 通常の処理
         if self._cmd_topic:
             Logger.localinfo(f"{self._name} : {self._twist}")  # For initial debugging
             self._pub.publish(self._cmd_topic, self._twist)
@@ -88,23 +85,22 @@ class TimedCmdVelState(EventState):
 
     def on_enter(self, userdata):
         """
-        Call this method when the state becomes active.
+        ステートがアクティブになったら、このメソッドを呼び出す。
 
-        i.e. a transition from another state to this one is taken.
+        つまり、別のステートからこのステートへの遷移が行われる。
         """
         self._start_time = self._node.get_clock().now()
-        self._return = None  # reset the completion flag
+        self._return = None  # 完了フラグをリセット
 ```
 
-The `TimedCmdVelState` stores the start time `on_enter` and the published the specified command velocity to the 
-designated topic at *approximately* the desired update rate.  Again, FlexBE is best effort on timing and depends on 
-the operating system and other processes.  It is *NOT* a guaranteed realtime controller.
+`TimedCmdVelState`は、`on_enter`メソッドで開始時間を保存し、指定されたトピックに、*おおよそ* 希望する更新頻度で、指定されたコマンド速度をパブリッシュします。
+繰り返しになりますが、FlexBEはタイミングに関するベストエフォートであり、オペレーティングシステムや他のプロセスに依存します。
+FlexBEは保証されたリアルタイムコントローラーでは*ありません*。
 
-All of the state machine implementation code in [`flexbe_turtlesim_demo_sm.py`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_sm.py) is generated by the FlexBE UI when the behavior is saved.
+[`flexbe_turtlesim_demo_sm.py`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_sm.py)にあるステートマシンの実装コードはすべて、ビヘイビアが保存されるときにFlexBE UIによって生成されます。
 
-In this case, as shown in the fragment below, the code creates an instance (called `_sm_eightmove_1`) of the [`OperatableStateMachine`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/core/operatable_state_machine.py) from FlexBE Core 
- and `add`s the "LeftTurn" instance of `TimedCmdVelState` (among others), then adds the `_sm_eightmove_1` instance to the top-level state machine `_state_machine`.  This is the way FlexBE composes states to implement the HFSM concept.
-
+この場合、以下の断片的なコードに示すように、コードはFlexBE Coreの[`OperatableStateMachine`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/core/operatable_state_machine.py)のインスタンス（`_sm_eightmove_1`と呼ぶ）を作成し、
+`TimedCmdVelState`の「LeftTurn」インスタンス（など）を`add`し、`_sm_eightmove_1`インスタンスを最上位のステートマシン`_state_machine`に追加します。 これが FlexBE が HFSM の概念を実装するためのステートの構成方法です。
 
 ```python
         # x:975 y:134, x:130 y:365
@@ -129,20 +125,19 @@ In this case, as shown in the fragment below, the code creates an instance (call
 
 ```
 
-The parameters in the various states -- "Forward0", "LeftTurn", "Forward1", "RightTurn", and "Forward2" -- were calculated to generate the basic figure 8 pattern demonstrated. Note, these are purely open loop motions and do not make any adjustment to stay in bounds or avoid other turtles you may choose to spawn in the `turtlesim` node.
+様々なステート --「Forward0」、「LeftTurn」、「Forward1」、「RightTurn」、「Forward2」 -- のパラメータは、基本的な8の字パターンを生成するために計算されました。なお、これらは純粋なオープンループの動きであり、`turtlesim`ノードでスポーンする他のカメを避けたり、境界内にとどまったりするような調整はしていません。
 
-When the operator clicks the "Eight" transition, or if automatically selected in "Full" autonomy, the "EightMove" state machine becomes
-the active state from the point of view of the top-level (or "root") state machine, `on_enter`ing the "EightMove" state, the initial "Forward0" state is activated, and becomes the active state being executed by the behavior engine.  The "EightMove" state remains active until the "Forward2" state returns "done", at which point "EightMove" returns the outcome "finished".
+オペレータが「Eight」トランジションをクリックすると、または「Full」自律で自動的に選択されると、「EightMove」ステートマシンがトップレベル（または「ルート」）ステートマシンから見てアクティブな状態になり、
+「EightMove」ステートに`on_enter`すると、最初の「Forward0」ステートがアクティブになり、ビヘイビア エンジンによって実行されるアクティブな状態になります。 「EightMove」ステートは「Forward2」ステートが「done」を返すまでアクティブなままであり、その時点で「EightMove」は「finished」という結果を返します。
 
-> Note: A "failed" outcome for "EightMove" was initially defined, but was never connected internally.
-> Regardless, since it was defined, it must be connected at the root level.  This allows for future modification.
-> FlexBE requires all possible state outcomes to be terminated, even if they are never exercised.
-> Alternatetively, the "failed" outcome could be deleted in the editor view of "EightMove" by clicking the box with red line to right of outcome label.
-
+> 注：「EightMove」の「failed」結果は当初定義されていたが、内部的には接続されていませんでした。
+> いずれにせよ、定義された以上、ルートレベルで接続されなければなりません。 これによって将来の修正が可能になります。
+> FlexBEは、たとえ一度も行使されなかったとしても、可能性のあるすべての状態結果を終了させることを要求します。
+> 別の方法として、「EightMove」のエディタビューで、結果ラベルの右側にある赤線のボックスをクリックして、「failed」の結果を削除することもできます。
 
 ----
 
-This example has demonstrated construction of an HFSM using a state machine container.
+この例では、ステートマシン・コンテナを使ってHFSMを構築することを示しました。
 
-[Back to the overview](../README.md#selectable-transitions)
+[概要に戻る](../README.md#selectable-transitions)
 
