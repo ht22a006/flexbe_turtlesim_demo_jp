@@ -244,5 +244,5 @@ Also try to force early transitions by clicking on the transition label oval.  T
 > These changes are not visible in the source folder, and will be lost if the package is rebuilt.
 > To save any changes, the updated behavior Python and xml manifest files must be copied to the source folder.
 
-After experimenting with `Example 2`, continue on to [Example 3](docs/example3.md) for a look at our first Hierarchical Finite State Machine (HFSM) using a `ConcurrencyContainter` that executes states in "parallel".
+After experimenting with `Example 2`, continue on to [Example 3](../docs/example3.md) for a look at our first Hierarchical Finite State Machine (HFSM) using a `ConcurrencyContainter` that executes states in "parallel".
 

@@ -220,4 +220,4 @@ and the UI graphics source.
         return _state_machine
 ```
 
-After experimenting with `Example 3`, continue on to [Example 4](docs/example4.md) for a look at our second Hierarchical Finite State Machine (HFSM) that includes this entire `Examaple 3` behavior as a sub-behavior using a `StateMachine` container.
+After experimenting with `Example 3`, continue on to [Example 4](../docs/example4.md) for a look at our second Hierarchical Finite State Machine (HFSM) that includes this entire `Examaple 3` behavior as a sub-behavior using a `StateMachine` container.

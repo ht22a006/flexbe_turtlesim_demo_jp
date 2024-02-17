@@ -162,5 +162,5 @@ image below.  As this is during the wait period the output transition is shown i
 
 For the next run, try setting the autonomy level higher to "High" or "Full", which will allow the behavior to run to completion without the operator needed to click "done" after the log state.
 
-After this, continue on to [Example 2](docs/example2.md) for a more indepth discussion of the state implementations.
+After this, continue on to [Example 2](../docs/example2.md) for a more indepth discussion of the state implementations.
 
