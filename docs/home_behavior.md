@@ -237,5 +237,5 @@ with _state_machine:
 この例では、FlexBE内で非同期サービスコールを使用することを示しました。
 ブロッキングサービスコールとの比較については、["Clear"](clear_behavior.md) を参照してください。
 
-[概要に戻る](../README.md#selectable-transitions)
+[概要に戻ります](../README.md#selectable-transitions)
 
