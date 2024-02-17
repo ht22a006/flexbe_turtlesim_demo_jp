@@ -1,26 +1,24 @@
-# Turtlesim Demo Home Behavior
+# Turtlesim Demo ホーム ビヘイビア
 
-The "Home" sub-behavior is implemented by a sequence of states as shown below:
+「ホーム」サブビヘイビアは、以下のような一連の状態によって実装されます。
 
 <p float="center">
-  <img src="img/home_editor_view.png" alt="'Home' behavior." width="45%">
+  <img src="../img/home_editor_view.png" alt="'Home' behavior." width="45%">
 </p>
 
-This behavior is first invoked on initial entry to the `FlexBE Turtlesim Demo` behavior 
-after clearing the screen.  After that, the behavior is invoked by selecting the "Home" transition 
-from the "Operator" decision state shown in the monitoring view.
+このビヘイビアは、画面をクリアした後に`FlexBE Turtlesim Demo`ビヘイビアに最初に入ったときに最初に呼び出されます。 
+その後、ビヘイビアはモニタリングビューに表示される「Operator」決定ステートから「Home」遷移を選択することで呼び出されます。
+アクティブな状態は、まずメッセージテキスト`"Go to home position"`で「GoHome」[`LogState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py)に遷移し、次に[`TeleportAbsoluteState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py)
+ステート実装の「Home」ステートのインスタンスに遷移します。 
+その結果は、「AtHome」または「ServiceCallFailed」ステートによってログ出力し、システムは「Operator」決定ステートに遷移します。
 
-The active state first transitions to the "GoHome" [`LogState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py) with the message text `"Go to home position"`, then it transitions to the "Home" state instance of the [`TeleportAbsoluteState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py) 
-state implementation.  The result is then logged by either "AtHome" or "ServiceCallFailed" states, and the system transitions back to the
-"Operator" decision state.
+以下のコードに示すように、`TeleportAbsoluteState` は、`turtlesim` ノードが提供する[`TeleportAbsolute`](https://docs.ros2.org/latest/api/turtlesim/srv/TeleportAbsolute.html) サービスへの FlexBE インターフェースを提供します。
+このノードは `__init__` メソッド呼び出しの入力引数として、または `userdata` として位置を受け取ることができます。
+`userdata`については["Rotate"](rotate_behavior.md)を参照してください。
 
-As shown in the code fragment below, the `TeleportAbsoluteState` provides a FlexBE interface to the [`TeleportAbsolute`](https://docs.ros2.org/latest/api/turtlesim/srv/TeleportAbsolute.html) service provided by the `turtlesim` node.  The node can accept the position as either input parameters in the `__init__` method invocation, or as `userdata`.
-For a more indepth discussion of `userdata` see the ["Rotate"](rotate_behavior.md) discussion.
-
-The `__init__` method constructor sets up a [`ProxyServiceCaller`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/proxy/proxy_service_caller.py) instance to handle the actual calls. FlexBE uses a number of *Proxy* interfaces 
-to allow multiple states to share a single access point to the node for publish, subscribing, and calling interfaces to other nodes.
-The onboard system maintains a single ROS `node` as its point of access to external nodes.
-
+`__init__`メソッド コンストラクタは、実際の呼び出しを処理するための[`ProxyServiceCaller`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/proxy/proxy_service_caller.py)インスタンスを設定します。
+FlexBE では、複数のステートがノードへの単一のアクセスポイントを共有して、他のノードへのインターフェースのパブリッシュ、サブスクライブ、呼び出しを行えるようにするために、多くの *Proxy* インターフェースを使用します。
+オンボードシステムは外部ノードへのアクセスポイントとして単一のROS `node` を維持します。
 
 ```python 
 from rclpy.duration import Duration
@@ -32,44 +30,44 @@ from turtlesim.srv import TeleportAbsolute
 
 class TeleportAbsoluteState(EventState):
     """
-    This state teleports the Turtlesim turtle using TeleportAbsolute service.
+    この状態は、TeleportAbsoluteサービスを使用してTurtlesimタートルをテレポートする。
 
-    Parameters
-    -- turtle_name   string     Turtle name (default: `turtle1`)
-    -- x             float      x position (default: 0.0)
-    -- y             float      y position (default: 0.0)
-    -- theta         float      yaw orientation angle (radians) (default: 0.0)
-    -- call_timeout  float      Timeout for completion (default: 3.0 seconds)
-    -- wait_timeout  float      Duration to wait for service to become available (default: 3.0 seconds)
-    -- service_name  string     Service name (default: `teleport_absolute`)
+    引数
+    -- turtle_name  string  タートルの名前 (デフォルト: `turtle1`)
+    -- x            float   x 位置 (デフォルト: 0.0)
+    -- y            float   y 位置 (デフォルト: 0.0)
+    -- theta        float   ヨーの向き角度（ラジアン）（デフォルト：0.0）
+    -- call_timeout float   完了までのタイムアウト時間（デフォルト：3.0 秒）
+    -- wait_timeout float   サービスが利用可能になるまでの待ち時間（デフォルト：3.0秒）。
+    -- service_name string  サービス名（デフォルト：`teleport_absolute`）。
 
-    Outputs
-    <= done             Service call returned result as expected
-    <= failed           Failed to make service call successfully
-    <= call_timeout     Service call did not return timely result
-    <= unavailable      Service is unavailable
+    結果
+    <= done             サービスコールが期待通りの結果を返した
+    <= failed           サービスコールに失敗した
+    <= call_timeout     サービスコールはタイムリーに結果を返さなかった
+    <= unavailable      サービスが利用できない
 
-    User data
-    ># pose      float[]     Optional 2 (x, y) or 3 elements (x, y, theta_radians) as list of numbers
+    ユーザデータ
+    ># pose     float[] 2要素(x,y)または3要素(x,y,theta_radians)の数値リスト
     """
 
     def __init__(self, turtle_name='turtle1', x=0.0, y=0.0, theta=0.0,
                  call_timeout=3.0, wait_timeout=3.0, service_name='teleport_absolute'):
-        """Declare outcomes, input_keys, and output_keys by calling the EventState super constructor."""
+        """親クラスEventStateのコンストラクタを呼び出して、outcomes、input_keys、output_keysを宣言する。"""
 
         super().__init__(outcomes=['done', 'failed', 'call_timeout', 'unavailable'],
                          input_keys=['pose'])
 
         ProxyServiceCaller.initialize(TeleportAbsoluteState._node)
 
-        # Store state parameters for later use.
+        # 後で使用するために状態パラメータを保存する。
         self._call_timeout = Duration(seconds=call_timeout)
         self._wait_timeout = Duration(seconds=wait_timeout)
 
-        # The constructor is called when building the state machine, not when actually starting the behavior.
-        # Thus, we cannot save the starting time now and will do so later.
+        # コンストラクタは、実際にビヘイビアを開始するときではなく、ステートマシンを構築するときに呼び出される。
+        # したがって、ここでは開始時間を保存できず、後で保存することになる。
         self._start_time = None
-        self._return = None  # Track the outcome so we can detect if transition is blocked
+        self._return = None  # 結果を追跡することで、遷移が待たされているかどうかを検出できる。
         self._service_called = False
 
         self._srv_topic = f'/{turtle_name}/{service_name}'
@@ -82,15 +80,14 @@ class TeleportAbsoluteState(EventState):
 
         self._error = None
 
-        # Set up the proxy now, but do not wait on the service just yet
+        # ここでプロキシを設定するが、まだサービスを待ってはいけない。
         self._srv = ProxyServiceCaller({self._srv_topic: TeleportAbsolute}, wait_duration=0.0)
 ```
 
-Given the above state implementation, the `FlexBE Turtlesim Demo` behavior defines an instance of this class, 
-and adds it to the top level state machine in [`flexbe_turtlesim_demo_sm.py`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_sm.py)
+上記のステートの実装を与えると、`FlexBE Turtlesim Demo` ビヘイビアはこのクラスのインスタンスを定義し、[`flexbe_turtlesim_demo_sm.py`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_sm.py) の最上位のステートマシンに追加します。
 
-A fragment of the `flexbe_turtlesim_demo_sm.py` behavior implementation is shown below.  The values assigned 
-in the `TeleportAbsoluteState()` constructor are taken from the FlexBE editor window shown above.
+以下に `flexbe_turtlesim_demo_sm.py` のビヘイビアの実装の一部を示します。
+`TeleportAbsoluteState()`コンストラクタに代入された値は、上のFlexBEエディタウィンドウから取得したものです。
 
 ```python
 _state_machine = OperatableStateMachine(outcomes=['finished'])
@@ -129,25 +126,22 @@ with _state_machine:
 
 ```
 
-For this discusion, we will stick to high level overview. For more details about the state lifecycle see the [Examples](examples.md). 
+この議論では、高レベルの概要に留まることにします。状態のライフサイクルの詳細については、[例](examples.md)を参照してください。
 
-When the "Home" state becomes active the `on_enter` method of `TeleportAbsoluteState` class is called.
-If the system is using `userdata` the desired pose is extracted.  For our case, we have remapped the name `pose` to the `home` userdata defined on the behavior dashboard.  Again, for a more indepth discussion of `userdata` see the ["Rotate"](rotate_behavior.md) discussion.
+「Home」ステートがアクティブになると、 `TeleportAbsoluteState` クラスの `on_enter`メソッドが呼び出されます。
+システムが `userdata` を使用している場合は、目的のポーズが抽出されます。 今回のケースでは、`pose`という名前をビヘイビアダッシュボードで定義された`home`という`userdata`にリマップしています。 `userdata`については[Rotate](rotate_behavior.md)を参照してください。
 
-If this user data is not provided, then the state defaults to using the parameters defined in the by the creation 
-in `flexbe_turtlebot_demo_sm` code above.
+この `userdata` が提供されない場合、ステートは上記の `flexbe_turtlebot_demo_sm` コードで作成時に定義されたパラメータをデフォルトで使用します。
 
-The state instance makes note of the `self._start_time`, and if available the service call is invoked using an asychronous (non-blocking) 
-service call (constrast with ["Clear"](clear_behavior.md) discussion ).  
-If an exception occurs, the state `self._return` is marked as `failed`.
-
+ステートインスタンスは `self._start_time` を記録し、利用可能であれば非同期（待たない）サービスコールを使用してサービスコールが起動されます（["Clear"](clear_behavior.md)でのディスカッションとは対照的に）。 
+例外が発生した場合、ステートの`self._return` は `failed` としてマークされます。
 
 ```python 
     def on_enter(self, userdata):
         """
-        Call this method when the state becomes active.
+        状態がアクティブになったときにこのメソッドを呼び出す。
 
-        i.e. a transition from another state to this one is taken.
+        つまり、別の状態からこの状態への遷移が行われる。
         """
 
         if 'pose' in userdata and isinstance(userdata.pose, (list, tuple)):
@@ -156,7 +150,7 @@ If an exception occurs, the state `self._return` is marked as `failed`.
                 self._srv_request.y = float(userdata.pose[1])
                 self._srv_request.theta = 0.0
                 if len(userdata.pose) == 3:
-                    # setting angle is optional
+                    # 角度設定は任意
                     self._srv_request.theta = float(userdata.pose[2])
 
                 Logger.localinfo(f"Using position = ({self._srv_request.x:.3f}, {self._srv_request.y:.3f}), "
@@ -172,7 +166,7 @@ If an exception occurs, the state `self._return` is marked as `failed`.
                              f"angle={self._srv_request.theta:.3f} radians")
 
         self._start_time = self._node.get_clock().now()
-        self._return = None  # reset the completion flag
+        self._return = None  # 完了フラグをリセット
         self._service_called = False
         try:
             if self._srv.is_available(self._srv_topic, wait_duration=0.0):
@@ -184,11 +178,11 @@ If an exception occurs, the state `self._return` is marked as `failed`.
             self._return = 'failed'
 
     def _do_service_call(self):
-        """Make the service call using async non-blocking."""
+        """非同期で待たずにサービスコールを行う。"""
         try:
             Logger.localinfo(f"{self._name}: Calling service {self._srv_topic} ...")
             self._srv_result = self._srv.call_async(self._srv_topic, self._srv_request, wait_duration=0.0)
-            self._start_time = self._node.get_clock().now()  # Reset timer for call timeout
+            self._start_time = self._node.get_clock().now()  # 呼び出しタイムアウトのタイマをリセット
             self._service_called = True
         except Exception as exc:
             Logger.logerr(f"{self._name}: Service {self._srv_topic} exception {type(exc)} - {str(exc)}")
@@ -196,53 +190,52 @@ If an exception occurs, the state `self._return` is marked as `failed`.
 
 ```
 
-The `on_enter` method is called once when the state becomes the active state in the state machine after a transition.
-From there on, the FlexBE behavior executive calls the `execute` method periodically at a desired rate until something other 
-than `None` is returned.
+`on_enter` メソッドは、ステートマシンの中で遷移した後にステートのアクティブになったときに一度だけ呼び出されます。
+それ以降、FlexBE ビヘイビアの実行部は、`None`以外が返されるまで、周期的に`execute`メソッドを呼び出します。
 
-If the service has been called, we wait for the result up until the designated timeout period has elapsed.  If the service 
-was not available `on_enter`, we call when it becomes available up until the designated timeout period.
+サービスが呼び出された場合、指定されたタイムアウト時間が経過するまで結果を待ちます。
+サービスが `on_enter` で利用可能でなかった場合は、指定されたタイムアウト時間まで利用可能になったときに呼び出します。
 
 ```python
     def execute(self, userdata):
         """
-        Execute this method periodically while the state is active.
+        状態がアクティブである間、このメソッドを周期的に実行する。
 
-        If no outcome is returned, the state will stay active.
+        結果が返されない場合、ステートはアクティブのまま。
         """
         if self._return:
-            # We have completed the state, and therefore must be blocked by autonomy level
+            # ステートが完了したら、自律性レベルによって待たされなければならない
             return self._return
 
         if self._service_called:
-            # Waiting for result.
-            # We will do this in a non-blocking way
+            # 結果を待つ
+            # これを待たないやり方で行う
             if self._srv.done(self._srv_topic):
-                _ = self._srv.result(self._srv_topic)  # grab empty result, but nothing to check here presume success
+                _ = self._srv.result(self._srv_topic)  # 空の結果を取得するが、ここでは成功しているかどうか何も確認しない
                 self._return = 'done'
             else:
 
                 if self._node.get_clock().now().nanoseconds - self._start_time.nanoseconds > self._call_timeout.nanoseconds:
-                    # Failed to return call in timely manner
+                    # 時間内に呼び出しを返さななかった
                     self._return = 'call_timeout'
                     Logger.logerr(f"{self._name}: Service {self._srv_topic} call timed out!")
         else:
-            # Waiting for service to become available in non-blocking manner
+            # 待たないやり方でサービスが利用可能になるのを待つ
             if self._srv.is_available(self._srv_topic, wait_duration=0.0):
                 Logger.localinfo(f"{self._name}: Service {self._srv_topic} is now available - making service call!")
                 self._do_service_call()
-                # Process the result on next execute call (so some delay)
+                # 次のexecuteの呼び出しで結果を処理する（そのため、若干の遅延が発生する）
             else:
                 if self._node.get_clock().now().nanoseconds - self._start_time.nanoseconds > self._wait_timeout.nanoseconds:
-                    # Failed to return call in timely manner
+                    # 時間内にサービスが有効にならなかった
                     self._return = 'unavailable'
                     Logger.logerr(f"{self._name}: Service {self._srv_topic} is unavailable!")
 
         return self._return
 ```
 
-This example has demonstrated using an asynchronous service call within FlexBE.
-For comparison with a blocking service call, see the ["Clear"](clear_behavior.md) discussion.
+この例では、FlexBE内で非同期サービスコールを使用することを示しました。
+ブロッキングサービスコールとの比較については、["Clear"](clear_behavior.md) を参照してください。
 
-[Back to the overview](../README.md#selectable-transitions)
+[概要に戻る](../README.md#selectable-transitions)
 
