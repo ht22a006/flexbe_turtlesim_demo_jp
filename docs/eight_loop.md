@@ -15,7 +15,7 @@ Here we demonstrate adding a new `State machine` container type to the existing 
 In the given `FlexBE Turtlesim Demo` behavior we added the container, then edited its name to be "EightMove" instead of "Container".
 
 Inside the "EightMove" container, shown in the rightmost image above, we have defined a simple state machine that is just a sequence of 
-[`TimeCmdVelState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py) instances.
+[`TimedCmdVelState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py) instances.
 
 
 ```python
