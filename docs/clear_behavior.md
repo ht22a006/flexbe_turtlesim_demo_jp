@@ -1,31 +1,30 @@
-# Turtlesim Demo Clear Behavior
+# Turtlesim Demo クリアビヘイビア
 
-The "Clear" sub-behavior is implemented by a sequence of states as in the main editor view
+「クリア」サブビヘイビアは、メイン エディター ビューと同様に、一連のステートによって実装されています。
 
 <p float="center">
-  <img src="img/editor_view.png" alt="State machine editor view" width="45%">
+  <img src="../img/editor_view.png" alt="State machine editor view" width="45%">
 </p>
 
-This discussion presumed you have already read through the ["Home"](home_behavior.md) discussion.
+この議論は、あなたがすでに[「Home」](home_behavior.md)の議論に目を通していることを前提としています。
 
-The "Clear" transition first invokes the "ClearLog" [LogState](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py) to display the `"Clear turtlesim window ..."` text, then transitions to the 
-"ClearWindow" state instance of the [`ClearTurtlesimState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/clear_turtlesim_state.py).  After the `ClearTurtlesimState` returns, the system either transitions back to the "Operator" decision state, or
-into the "ClearFailed" `LogState` to notify the operator of problems.
+「Clear」の遷移は、まず「ClearLog」[LogState](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py) を呼び出して `"Clear turtlesim window ..."`のテキストを表示し、次に [`ClearTurtlesimState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/clear_turtlesim_state.py) の「ClearWindow」ステートインスタンスに遷移します。 
+`ClearTurtlesimState`が戻った後、システムは「Operator」決定ステートに戻るか、「ClearFailed」`LogState`に遷移して問題をオペレータに通知します。
 
-The key difference between `ClearTurtlesimState` and the [`TeleportAbosoluteState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py) discussed in "Home" is that `ClearTurtlesimState` uses a *blocking* service call.
+`ClearTurtlesimState`と[`TeleportAbosoluteState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py)の主な違いは、`ClearTurtlesimState`が *待たせる（blocking）* サービスコールを使用することです。
 
 
 ```python
     def on_enter(self, userdata):
         """
-        Call when the state becomes active.
+        ステートがアクティブになったときに呼び出す。
 
-        This example does NOT use any userdata passed from upstream states.
+        この例では、上流のステートから渡されたuserdataは使用しない。
 
-        , i.e. a transition from another state to this one is taken.
+        つまり、他のステートからこのステートへの遷移が行われる。
         """
         self._start_time = self._node.get_clock().now()
-        self._return = None  # reset the completion flag
+        self._return = None  # 完了フラグをリセット
         self._srv_result = None
         self._service_called = False
         try:
@@ -38,7 +37,7 @@ The key difference between `ClearTurtlesimState` and the [`TeleportAbosoluteStat
             Logger.logerr(f"{self._name}: Service {self._srv_topic} exception {type(exc)} - {str(exc)}")
 
     def _do_service_call(self):
-        """Make the service call using synchronous blocking call."""
+        """同期の待たせる呼び出しを使ってサービス・コールを行う。"""
         try:
             Logger.localinfo(f"{self._name}: Calling service {self._srv_topic} ...")
             self._service_called = True
@@ -48,18 +47,18 @@ The key difference between `ClearTurtlesimState` and the [`TeleportAbosoluteStat
             self._srv_result = None
 ```
 
-Use of blocking calls are discouraged with FlexBE and in most cases you should prefer the asynchronous model.
+FlexBEでは、待たせる呼び出し（blocking call）の使用は推奨されておらず、ほとんどの場合、非同期モデルを好むべきです。
 
-The typical state machine model assumes that `on_enter`, `execute`, and `on_exit` calls are relatively fast compared to the
-desired update rate of the system.  This is especially important if the state can be embedded into a `ConcurrencyContainer` (discussed in [Examples](examples.md)).
+典型的なステートマシンのモデルでは、`on_enter`、`execute`、`on_exit` の呼び出しは、システムの望ましい更新頻度に比べて比較的高速であると仮定しています。 
+これは、ステートを `ConcurrencyContainer`（[Examples](examples.md)で説明します）に埋め込むことができる場合に特に重要です。
 
-That said, blocking calls are possible as demonstrated here, and can be appropriate in some instances.
-Just beware that this impacts the timing of all other states as the state machine is executed in a single thread, even for *concurrent* containers.
+とはいえ、ここで示したようにブロッキング呼び出しは可能であり、場合によっては適切なこともあります。
+ただ、これはステートマシンが単一のスレッドで実行されるため、他のすべてのステートのタイミングに影響を与えることに注意してください。
 
 ----
 
-This example has demonstrated using an blocking synchronous service call within FlexBE.
-For comparison with a non-blocking asynchronous service call, see the ["Home"](home_behavior.md) discussion.
+この例では、FlexBE内で待たせる同期サービスコールを使用することを示しました。
+待たせないの非同期サービスコールとの比較については、[「Home」](home_behavior.md) の説明を参照してください。
 
-[Back to the overview](../README.md#selectable-transitions)
+[概要に戻ります](../README.md#selectable-transitions)
 
