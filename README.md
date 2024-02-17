@@ -189,7 +189,7 @@ FlexBEは、階層型有限ステートマシン（HFSM）をサポートして�
     > 注：指定のステート更新レートは、ベストエフォートでしかありません。 FlexBEはリアルタイムコントローラではなく、
     > 正確なタイミングを必要としない低レート（10～100Hz）の周期的なモニタリングに適しています。
   
-例えば、[`timed_cmd_vel_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py)は、与えられた時間の間、一定の指令速度を[Twist](https://docs.ros2.org/latest/api/geometry_msgs/msg/TwistStamped.html)(前進速度と旋回速度)としてパブリッシュする`TimeCmdVelState`を実装しています。 `FlexBE Turtlesim Demo`のビヘイビアには、`EightMove`サブステートマシンコンテナが含まれています。 コンテナをダブルクリックするか、シングルクリックしてコンテナを開くようにリクエストして、そのコンテナを開くと、`TimedCmdVelState`の5つのステートのインスタンスが表示されます。 特定のパラメータ値は、FlexBE Editorにおいて特定のステートをクリックして設定します。「EightMove」ステートマシンと特定の 「LeftTurn」ステートの値を以下に示します。
+例えば、[`timed_cmd_vel_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py)は、与えられた時間の間、一定の指令速度を[Twist](https://docs.ros2.org/latest/api/geometry_msgs/msg/TwistStamped.html)(前進速度と旋回速度)としてパブリッシュする`TimedCmdVelState`を実装しています。 `FlexBE Turtlesim Demo`のビヘイビアには、`EightMove`サブステートマシンコンテナが含まれています。 コンテナをダブルクリックするか、シングルクリックしてコンテナを開くようにリクエストして、そのコンテナを開くと、`TimedCmdVelState`の5つのステートのインスタンスが表示されます。 特定のパラメータ値は、FlexBE Editorにおいて特定のステートをクリックして設定します。「EightMove」ステートマシンと特定の 「LeftTurn」ステートの値を以下に示します。
 
 <p float="center">
   <img src="img/timed_cmd_vel.png" alt="'EightMove' ステートマシンコンテナ内の LeftTurn ステートのパラメータ。" width="45%">
