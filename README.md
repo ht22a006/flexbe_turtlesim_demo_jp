@@ -213,11 +213,11 @@ FlexBEは、階層型有限ステートマシン（HFSM）をサポートして�
 
 #### 選択可能な遷移
 
-* ["Home"](docs/home_behavior.md) カメを中心に配置します。
-* ["Clear"](docs/clear_behavior.md) 軌跡を消去します。
-* ["Eight"](docs/eight_loop.md) 別のループを動かさせる。
-* ["Rotate"](docs/rotate_behavior.md) オペレータが希望する角度を入力し、FlexBEの`userdata` を使ってそれを渡します。
-* ["Pose"](docs/pose_behavior.md) オペレータが希望のポーズ位置を('[x, y]')として、または、ポーズを('[x, y, angle_in_radians]')として入力できるようにします。
+* [「Home」](docs/home_behavior.md) カメを中心に配置します。
+* [「Clear」](docs/clear_behavior.md) 軌跡を消去します。
+* [「Eight」](docs/eight_loop.md) 別のループを動かさせる。
+* [「Rotate」](docs/rotate_behavior.md) オペレータが希望する角度を入力し、FlexBEの`userdata` を使ってそれを渡します。
+* [「Pose」](docs/pose_behavior.md) オペレータが希望のポーズ位置を('[x, y]')として、または、ポーズを('[x, y, angle_in_radians]')として入力できるようにします。
 * "Quit" ステートマシンのビヘイビアを完了し、ランタイム・コントロールを終了します。
 
 上記の遷移名をクリックすると、そのサブビヘイビアの詳細ページにジャンプします。
