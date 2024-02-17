@@ -3,7 +3,7 @@
 The "Clear" sub-behavior is implemented by a sequence of states as in the main editor view
 
 <p float="center">
-  <img src="img/editor_view.png" alt="State machine editor view" width="45%">
+  <img src="../img/editor_view.png" alt="State machine editor view" width="45%">
 </p>
 
 This discussion presumed you have already read through the ["Home"](home_behavior.md) discussion.

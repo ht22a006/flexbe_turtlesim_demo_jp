@@ -30,7 +30,7 @@ that the package `export`s `<flexbe_states />`.
 </export>
 ```
 
-Our [`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) specifies one parameter (`target_time`) and two outputs (`'done'` and `'failed'`).  
+Our [`ExampleState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) specifies one parameter (`target_time`) and two outputs (`'done'` and `'failed'`).  
 This example does NOT use `userdata`.
 
 ```
@@ -84,7 +84,7 @@ Only an `execute` function is required to be overridden so that
 the state can return a value an terminate the state operation.
 The other methods can be overridden, or left as their default `pass` values from `EventState`.  At some point, the `enter` method should return a value other than `None` otherwise the state executes forever.
 
-The [`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) overrides all of the methods, and adds logging to each transition to show how the the system executes each method during the state lifecycle.
+The [`ExampleState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) overrides all of the methods, and adds logging to each transition to show how the the system executes each method during the state lifecycle.
 
 ```python
 def on_enter(self, userdata):
@@ -169,7 +169,7 @@ See the TurtleSim demo discussions for ["Home"](home_behavior.md), ["Clear"](cle
 for more information about `action` and `service` handling.
 
 
-The [`ExampleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) `execute` function monitors the time since `on_enter`, and returns `done` when the *approximate* time has elapsed based on the designated update rate.
+The [`ExampleState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/example_state.py) `execute` function monitors the time since `on_enter`, and returns `done` when the *approximate* time has elapsed based on the designated update rate.
 
 ```python
 def execute(self, userdata):

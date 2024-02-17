@@ -5,7 +5,7 @@ Two key parts of FlexBE that extends the concept beyond pure state machines are:
 * 1) composition of behaviors into HFSM
 * 2) `userdata` that can be passed from one state to another.
 
-For example, the [`RotateTurtleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/rotate_turtle_state.py) uses
+For example, the [`RotateTurtleState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/rotate_turtle_state.py) uses
 `userdata` to define the desired angle.
 
 We will begin our discussion with a simpler example behavior and then return to the specifics of the "Rotate" transition in `FlexBE Turtlesim Demonstration`.
@@ -80,8 +80,8 @@ angle in degrees.  In the `RotateTurtleState` editor, we specify that the requir
 uses the remapped `angle_degrees` key value as shown below.
 
 <p float="center">
-  <img src="img/rotate_state_userdata.png" alt="State machine level userdata." width="45%">
-  <img src="img/data_flow_graph.png" alt="Data flow view in Editor." width="45%">
+  <img src="../img/rotate_state_userdata.png" alt="State machine level userdata." width="45%">
+  <img src="../img/data_flow_graph.png" alt="Data flow view in Editor." width="45%">
 </p>
 
 The right image also shows the `Data Flow` view allows the behavior designer to view how `userdata`
@@ -202,8 +202,8 @@ In the `FlexBE Turtlesim Demo` statemachine,
  [`Turtlesim Input State Behavior`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/turtlesim_input_state_behavior_sm.py) that can be loaded and executed in FlexBE independent of `FlexBE Turtlesim Demo` behavior.
 
 <p float="center">
-  <img src="img/flexbe_input_userdata.png" alt="Turtlesim Input State Behavior data flow with InputState." width="45%">
-  <img src="img/input_ui_running.png" alt="Input user interface pop-up from input_action_server." width="45%">
+  <img src="../img/flexbe_input_userdata.png" alt="Turtlesim Input State Behavior data flow with InputState." width="45%">
+  <img src="../img/input_ui_running.png" alt="Input user interface pop-up from input_action_server." width="45%">
 </p>
 
 In the `InputState` configuration, we 

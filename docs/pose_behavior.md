@@ -8,8 +8,8 @@ The "Pose" transition makes use a `StateMachine` container with three states, in
 The `InputState` remaps its `userdata` `data` key to provide the `pose` key used by the `TeleportAbsoluteState`.
 
 <p float="center">
-  <img src="img/pose_behavior.png" alt="Pose behavior data flow." width="45%">
-  <img src="img/pose_input.png" alt="Pose input as list of numbers." width="45%">
+  <img src="../img/pose_behavior.png" alt="Pose behavior data flow." width="45%">
+  <img src="../img/pose_input.png" alt="Pose input as list of numbers." width="45%">
 </p>
 
 In the `InputState` configuration, we 

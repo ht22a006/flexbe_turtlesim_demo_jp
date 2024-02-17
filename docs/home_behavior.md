@@ -3,7 +3,7 @@
 The "Home" sub-behavior is implemented by a sequence of states as shown below:
 
 <p float="center">
-  <img src="img/home_editor_view.png" alt="'Home' behavior." width="45%">
+  <img src="../img/home_editor_view.png" alt="'Home' behavior." width="45%">
 </p>
 
 This behavior is first invoked on initial entry to the `FlexBE Turtlesim Demo` behavior 
