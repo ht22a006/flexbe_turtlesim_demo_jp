@@ -1,52 +1,47 @@
 
-# RotateTurtleState and Userdata
+# RotateTurtleState と Userdata
 
-Two key parts of FlexBE that extends the concept beyond pure state machines are:
-* 1) composition of behaviors into HFSM
-* 2) `userdata` that can be passed from one state to another.
+純粋なステートマシンの概念を拡張するFlexBEの2つの重要な部分は以下の通りです。
+* 1) HFSMへのビヘイビアの合成
+* 2) あるステートから別のステートへ渡すことができる`userdata`。
 
-For example, the [`RotateTurtleState`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/rotate_turtle_state.py) uses
-`userdata` to define the desired angle.
+例えば、[`RotateTurtleState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/rotate_turtle_state.py) は `userdata` を使って目標の角度を定義します。
 
-We will begin our discussion with a simpler example behavior and then return to the specifics of the "Rotate" transition in `FlexBE Turtlesim Demonstration`.
+より単純なビヘイビアの例から議論を始め、`FlexBE Turtlesim Demonstration`の「Rotate」遷移の詳細に戻ります。
 
 ----
 
 ### `Turtlesim Rotation State Behavior`
 
-Separate from the `Turtlesim Input State Behavior` sub-behavior used by the `FlexBE Turtlesim Demo`, 
-we have provided a simpler `Turtlesim Rotation State Behavior` behavior.
+`FlexBE Turtlesim Demo`で使用している`Turtlesim Input State Behavior`サブビヘイビアとは別に、もっと簡単な`Turtlesim Rotation State Behavior`ビヘイビアを用意しました。
 
-We will start by describing that first, you may load this behavior and execute if you wish.
+まずは、その最初を説明することから始めましょう。このビヘイビアを読み込んで実行しても構いません。
 
-Each FlexBE state can accept data according to specified `Input Keys`.
-These key names can be remapped to a different name at the state level.
+FlexBEの各ステートは指定された`input_keys`に従ってデータを受け取ることができます。
+これらのキーの名前は、ステートレベルで別の名前にリマップすることができます。
 
-For example, the `RotateTurtleState` implementation specifies an input key called `angle` and 
-an output key `duration that is passed to downstream states.
-
+例えば、 `RotateTurtleState` の実装では `angle` という入力キーと `duration` という出力キーが指定され、下流のステートに渡されます。
 ```Python
 class RotateTurtleState(EventState):
     """
     ...
-    Parameters
-    -- timeout             Maximum time allowed (seconds)
-    -- action_topic        Name of action to invoke
+    引数
+    -- timeout              最大許容時間（秒）
+    -- action_topic         呼び出すアクションの名前
 
-    Outputs
-    <= rotation_complete   Only a few dishes have been cleaned.
-    <= failed              Failed for some reason.
-    <= canceled            User canceled before completion.
-    <= timeout             The action has timed out.
+    結果
+    <= rotation_complete    いくつかの食器だけが洗浄された。（Only a few dishes have been cleaned.意味がわからない。何かのシャレ？）
+    <= failed               何らかの理由で失敗した。
+    <= canceled             ユーザーが完了前にキャンセルした。
+    <= timeout              アクションがタイムアウトした。
 
-    User data
-    ># angle     float     Desired rotational angle in (degrees) (Input)
-    #> duration  float     Amount time taken to complete rotation (seconds) (Output)
-
+    ユーザデータ
+    ># angle    float       回転角度の指定 (度) (入力)
+    #> duration float       回転完了までの時間(秒) (出力)
     """
 
     def __init__(self, timeout, action_topic="/turtle1/rotate_absolute"):
-        # See example_state.py for basic explanations.
+        # 基本的な説明は example_state.py を参照
         super().__init__(outcomes=['rotation_complete', 'failed', 'canceled', 'timeout'],
                          input_keys=['angle'],
                          output_keys=['duration'])
@@ -55,53 +50,46 @@ class RotateTurtleState(EventState):
         self._timeout_sec = timeout
         self._topic = action_topic
 
-        # Create the action client when building the behavior.
-        # Using the proxy client provides asynchronous access to the result and status
-        # and makes sure only one client is used, no matter how often this state is used in a behavior.
+        # ビヘイビアを構築する際にアクションクライアントを作成する。
+        # プロキシクライアントを使用することで、結果とステータスに非同期でアクセスできるようになり、
+        # ビヘイビアでこのステートが何度使用されても、使用されるクライアントは1つだけになる。
         ProxyActionClient.initialize(RotateTurtleState._node)
 
         self._client = ProxyActionClient({self._topic: RotateAbsolute},
-                                         wait_duration=0.0)  # pass required clients as dict (topic: type)
+                                         wait_duration=0.0)  # 必要なクライアントをdictとして渡す (topic: type)
 
-        # It may happen that the action client fails to send the action goal.
+        # アクションクライアントがアクションゴールの送信に失敗することがある。
         self._error = False
-        self._return = None  # Retain return value in case the outcome is blocked by operator
+        self._return = None  # オペレータによって結果がブロックされた場合に戻り値を保持する。
         self._start_time = None
 
 ```
 
-Internally, the state implementation will use `userdata.angle` to access the stored data
-using the FlexBE core [`userdata.py` class](https://github.com/flexbe/flexbe_behavior_engine/flexbe_core/flexbe_core/userdata.py) that
-extends the capabilities of the basic `dict` object.
+内部的には、状態の実装は `userdata.angle` を使用して、
+基本的な `dict` オブジェクトの機能を拡張した FlexBE コア [`userdata.py` クラス](https://github.com/flexbe/flexbe_behavior_engine/flexbe_core/flexbe_core/userdata.py) を使用して保存されたデータにアクセスします。
 
-In the `Turtlesim Rotation State Behavior` behavior, we define
-the `userdata` at the FlexBE UI Dashboard as `angle_degrees`, the desired
-angle in degrees.  In the `RotateTurtleState` editor, we specify that the required `angle` key 
-uses the remapped `angle_degrees` key value as shown below.
-
+`Turtlesim Rotation State Behavior` ビヘイビアでは、FlexBE UI Dashboard で `userdata` を `angle_degrees` と定義すます。
+`RotateTurtleState` エディターにおいて、必要な `angle` キーが、リマップされた `angle_degrees` キー値を使用するように指定します。
 <p float="center">
-  <img src="img/rotate_state_userdata.png" alt="State machine level userdata." width="45%">
-  <img src="img/data_flow_graph.png" alt="Data flow view in Editor." width="45%">
+  <img src="../img/rotate_state_userdata.png" alt="ステートマシンレベルのuserdata." width="45%">
+  <img src="../img/data_flow_graph.png" alt="エディタのデータフロービュー。" width="45%">
 </p>
 
-The right image also shows the `Data Flow` view allows the behavior designer to view how `userdata`
-is passed through the state machine.  Once defined, a `userdata` key/value pair
-persists for the life of the state machine.
+右の図には`Data Flow`ビューも示されており、ビヘイビアの設計者は`userdata`がどのようにステートマシンを通過するかを見ることができます。 
+一度定義された `userdata` のキーと値のペアは、ステートマシンの寿命が尽きるまで持続します。
 
-Now when the state is executed the turtle will rotate to the key value that was defined after converting to `radians` as required by the
-[`RotateAbsolute`](https://docs.ros2.org/foxy/api/turtlesim/action/RotateAbsolute.html) action provided by `Turtlesim`.
+これでステートが実行されると、タートルは `Turtlesim` が提供する [`RotateAbsolute`](https://docs.ros2.org/foxy/api/turtlesim/action/RotateAbsolute.html) アクションで要求される `radians` に変換した後、定義されたキーの値だけ回転します。
 
-> Note: Normally, we suggest you stick to a consistent convention
-> for passing data, and ROS uses `radians` for angles by convention.  
-> Here, we chose `degrees` to illustrate data conversions and for operator convenience at the UI.
+> 注：通常、データの受け渡しには一貫した慣習に従うことをお勧めします。ROSは慣例により、角度に`ラジアン`を使用します。 
+> ここでは、データ変換の説明とUIでのオペレータの利便性のために`degrees`を選択しました。
 
-The `userdata` is passed to the standard `on_enter`, `execute`, and `on_exit` methods of each FlexBE state.
-Here we validate the data and use to create a `Goal` request for the `RotateAbsolute` action.
+`userdata` は各 FlexBE ステートの標準的な `on_enter`、`execute`、`on_exit` メソッドに渡されます。
+ここではデータを検証し、`RotateAbsolute` アクションの `Goal` リクエストを作成するために使用します。
 
 ```python
 def on_enter(self, userdata):
 
-    # make sure to reset the error state since a previous state execution might have failed
+    # 以前の状態実行が失敗している可能性があるため、エラー状態を必ずリセットすること
     self._error = False
     self._return = None
 
@@ -110,147 +98,136 @@ def on_enter(self, userdata):
         Logger.logwarn("RotateTurtleState requires userdata.angle key!")
         return
 
-    # Recording the start time to set rotation duration output
+    # 回転時間出力を設定するために開始時間を記録する
     self._start_time = self._node.get_clock().now()
 
     goal = RotateAbsolute.Goal()
 
     if isinstance(userdata.angle, (float, int)):
-        goal.theta = (userdata.angle * math.pi) / 180  # convert to radians
+        goal.theta = (userdata.angle * math.pi) / 180  # ラジアンへ変換
     else:
         self._error = True
         Logger.logwarn("Input is %s. Expects an int or a float.", type(userdata.angle).__name__)
 
-    # Send the goal.
+    # ゴールを送信
     try:
             self._client.send_goal(self._topic, goal, wait_duration=self._timeout_sec)
     except Exception as e:
-        # Since a state failure not necessarily causes a behavior failure,
-        # it is recommended to only print warnings, not errors.
-        # Using a linebreak before appending the error log enables the operator to collapse details in the GUI.
+        # ステートの失敗が必ずしもビヘイビアの失敗を引き起こすとは限らないため, 
+        # エラーではなく警告のみを表示することが推奨さる.
+        # エラーログを追加する前に改行を使用すると、オペレータはGUIで詳細を折りたたむことができる。
         Logger.logwarn('Failed to send the RotateAbsolute command:\n%s' % str(e))
         self._error = True
 ```
 
-Then in the `execute` method we monitor for the successful result, and
-set the outgoing `userdata.duration` value.  This will be stored in the
-global `userdata` instance according to the remapping defined in the state edit window above.
+次に `execute` メソッドにおいて、成功した結果を監視し、送信する `userdata.duration` の値を設定します。
+この値は、上記のステート編集ウィンドウで定義したリマッピングに従って、グローバルな `userdata` インスタンスに格納されます。
 
 ```python
 def execute(self, userdata):
-    # While this state is active, check if the action has been finished and evaluate the result.
+    # このステートがアクティブな間は、アクションが終了したかどうかをチェックし、結果を評価する。
 
-    # Check if the client failed to send the goal.
+    # クライアントがゴールの送信に失敗したかどうかをチェックする。
     if self._error:
         return 'failed'
 
     if self._return is not None:
-        # Return prior outcome in case transition is blocked by autonomy level
+        # 自律性レベルによって遷移が待たされる場合、事前の結果を返す。
         return self._return
 
-    # Check if the action has been finished
+    # アクションが終了したかどうかをチェックする
     if self._client.has_result(self._topic):
-        _ = self._client.get_result(self._topic)  # The delta result value is not useful here
+        _ = self._client.get_result(self._topic)  # デルタ結果の値はここでは役に立たない
         userdata.duration = self._node.get_clock().now() - self._start_time
         Logger.loginfo('Rotation complete')
         self._return = 'rotation_complete'
         return self._return
 
     if self._node.get_clock().now().nanoseconds - self._start_time.nanoseconds > self._timeout.nanoseconds:
-        # Checking for timeout after we check for goal response
+        # ゴール応答をチェックした後にタイムアウトをチェックする
         self._return = 'timeout'
         return 'timeout'
 
-    # If the action has not yet finished, no outcome will be returned and the state stays active.
+    # アクションがまだ終了していない場合、結果は返されず、ステートはアクティブのままである。
     return None
 ```
 
-To demonstrate "collaborative autonomy" aspects of FlexBE,
-the next section discusses the "Rotate" transition from the `FlexBE Turtlesim Demonstration`.
+FlexBEの「協調的自律性」の側面を実証するために、次の節では`FlexBE Turtlesim Demonstration`の「Rotate」遷移について議論する。
 
 ----
 
-## "Rotate" - Collaborative Autonomy with Operator Input
+## 「Rotate」 - オペレータ入力による協調的自律性
 
-The "Rotate" sub-behavior is used to illustrate several features of FlexBE.
+「Rotate」サブビヘイビアは、FlexBEのいくつかの機能を説明するために使用されます。
 
-#### InputState and Collaborative Autonomy
+#### InputState と協調的自律性
 
-The [FlexBE Behavior Engine](https://github.com/flexbe/flexbe_behavior_engine) provides an [`InputState`](https://github.com/flexbe/flexbe_behavior_engine/flexbe_states/flexbe_states/input_state.py)
-that accepts operator data via a [`BehaviorInput` action](https://github.com/flexbe/flexbe_behavior_engine/flexbe_msgs/action/BehaviorInput.action) interface.
+[FlexBE Behavior Engine](https://github.com/flexbe/flexbe_behavior_engine) は、 [`BehaviorInput` アクション](https://github.com/flexbe/flexbe_behavior_engine/flexbe_msgs/action/BehaviorInput.action) インターフェースを通じてオペレータのデータを受け付ける [`InputState`](https://github.com/flexbe/flexbe_behavior_engine/flexbe_states/flexbe_states/input_state.py) を提供します。
 
-Additionally, FlexBE provides a simple action server with PyQt based UI window as part of the [`flexbe_input` package](https://github.com/flexbe/flexbe_behavior_engine/flexbe_input).
+さらに、FlexBEは[`flexbe_input`パッケージ](https://github.com/flexbe/flexbe_behavior_engine/flexbe_input)の一部として、PyQtベースのUIウィンドウを持つシンプルなアクションサーバを提供しています。
 
 `ros2 run flexbe_input input_action_server`
 
-When the FlexBE onboard `InputState` requests data of a given type, the
-UI window will open, prompt the user with the provided text, and wait for user input.
-After the user presses `Enter/Return` or clicks the `Submit` button, the data is serialized and 
-sent back to the `InputState` as a string of bytes data as part of the action result.
+FlexBEのオンボードの`InputState` が指定されたタイプのデータを要求すると、UIウィンドウが開き、指定されたテキストをユーザに入力するよう促し、ユーザの入力を待ちます。
+ユーザが `Enter/Return` を押すか `Submit` ボタンをクリックすると、データはシリアライズされ、アクションの結果の一部としてバイト列データとして `InputState` に返されます。
 
-> Note: The `InputState` makes use of the `pickle` module, and is subject to this warning from the Pickle manual:
+> 注意: `InputState` は `pickle` モジュールを使用しているため、Pickle マニュアルの以下の警告が適用されます。
 
->   Warning The pickle module is not secure against erroneous or maliciously constructed data. 
->   Never unpickle data received from an untrusted or unauthenticated source.
+> 警告 pickle モジュールは誤ったデータや悪意を持って作成されたデータに対して安全ではありません。
+> 信頼されていない、あるいは認証されていないソースから受け取ったデータは絶対に復元 (unpickle) しないでください。
 
-#### Sub-behaviors with Behavior Container 
+#### ビヘイビアコンテナによるサブビヘイビア 
 
-In the `FlexBE Turtlesim Demo` statemachine,
- the container labeled `Rotate` is itself a simple state machine;
- that is, we have a Hierarchical Finite State Machine (HFSM).
- Furthermore, it is not just a state machine as in the ["Eight"](eight_loop.md), but is in fact a separate behavior 
- [`Turtlesim Input State Behavior`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/turtlesim_input_state_behavior_sm.py) that can be loaded and executed in FlexBE independent of `FlexBE Turtlesim Demo` behavior.
+`FlexBE Turtlesim Demo`のステートマシンでは、「Rotate」と書かれたコンテナ自体が単純なステートマシンです。
+つまり、これは[「Eight」](eight_loop.md)のような単なるステートマシンではなく、実際には別のビヘイビア[`Turtlesim Input State Behavior`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/turtlesim_input_state_behavior_sm.py) であり、`FlexBE Turtlesim Demo` ビヘイビアとは独立してFlexBEにロードして実行することができます。
 
 <p float="center">
-  <img src="img/flexbe_input_userdata.png" alt="Turtlesim Input State Behavior data flow with InputState." width="45%">
-  <img src="img/input_ui_running.png" alt="Input user interface pop-up from input_action_server." width="45%">
+  <img src="../img/flexbe_input_userdata.png" alt="InputStateを使ったTurtlesim Input State Behaviorのデータフロー。" width="45%">
+  <img src="../img/input_ui_running.png" alt="input_action_server からの入力ユーザインタフェイスのポップアップ。" width="45%">
 </p>
 
-In the `InputState` configuration, we 
-  * specify result type 1 ([`BehaviorInput.Goal.REQUEST_FLOAT`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_msgs/action/BehaviorInput.action)) to request a single number from the user, 
-  * specify the prompt message for the user interface
-  * specify a timeout value for the `input_action_server` to become available
-  * specify the output userdata key mapping
+InputState`の設定では、次のようにしています。
+  * ユーザーから1つの数字を要求するために、結果タイプ1 ([`BehaviorInput.Goal.REQUEST_FLOAT`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_msgs/action/BehaviorInput.action)) を指定します。 
+  * ユーザーインターフェースのプロンプトメッセージを指定します。
+  * `input_action_server`が利用可能になるまでのタイムアウト値を指定します。
+  * 出力`userdata`キーのマッピングを指定します。
 
-> Note: For float types, we accept integer values without decimals as well.
+> 注：float型については、小数を除いた整数値も受け付けます。
 
-> Note: The `InputState` `timeout` refers to waiting for the action server to become available. 
-> The system will wait indefinitely for the operator to respond.
+> 注: `InputState`の`timeout` はアクションサーバーが利用可能になるのを待つことを意味します。
+> システムはオペレータが応答するまで無期限に待ちます。
 
 
-When running the sub-behavior after requesting "Rotate", the `input_action_server` will pop up the dialog shown in rightmost image,
-which displays the specified prompt and a result type prompt specified by action goal (in this case a `1` for a `float`).
+「Rotate」を要求した後にサブビヘイビアを実行すると、`input_action_server`は右端の画像のようなダイアログをポップアップし、指定されたプロンプトとアクションゴールで指定された結果タイプのプロンプト（この場合は`float`に対して`1`）を表示します。
 
-After submitting the value, the operator will need to confirm "received" transition if running in "Low" autonomy, the rotate state will then 
-execute the rotate action using the provided `userdata`.
+値を送信した後、もし「Low」自律性で動作していれば、オペレータは「received」遷移を確認する必要があります。
 
-#### ROS 2 Action Interfaces
+#### ROS 2 アクションインタフェース
 
-Both the `InputState` and `RotateTurtleState` make use of ROS [action](https://docs.ros.org/en/iron/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Actions/Understanding-ROS2-Actions.html) interfaces.
+`InputState`と`RotateTurtleState`はどちらもROS [action](https://docs.ros.org/en/iron/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Actions/Understanding-ROS2-Actions.html)のインターフェイスを利用しています。
 
-These are the preferred way of interacting with external nodes within FlexBE.
+これらはFlexBE内で外部ノードとやりとりするのに適した方法です。
 
-The `InputState` uses an action client that interacts with the `input_action_server` that provides a [`BehaviorInput`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_msgs/action/BehaviorInput.action) server interface.
+`InputState`は、[`BehaviorInput`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_msgs/action/BehaviorInput.action) サーバインターフェースを提供する `input_action_server` と対話するアクションクライアントを使用しています。
 
-The `turtlesim` node provides a [`RotateAbsolute`](https://docs.ros2.org/foxy/api/turtlesim/action/RotateAbsolute.html) action server interface.
+`turtlesim`ノードは[`RotateAbsolute`](https://docs.ros2.org/foxy/api/turtlesim/action/RotateAbsolute.html)アクションサーバーインターフェイスを提供しています。
 
-Both of these FlexBE states make use of a [`ProxyActionClient`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/proxy/proxy_action_client.py) that is set up in the `__init__` method of each state class.
+これらのFlexBEステートはどちらも[`ProxyActionClient`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_core/flexbe_core/proxy/proxy_action_client.py)を使用します。これは各ステートクラスの`__init__`メソッドで設定されます。
 
 ```python
         self._client = ProxyActionClient({self._topic: RotateAbsolute},
-                                         wait_duration=0.0)  # pass required clients as dict (topic: type)
+                                         wait_duration=0.0)  # 必要なクライアントをdictとして渡す (topic: type)
 ```
-FlexBE uses "proxies" to provide a single interface for all states in a behavior.  This reduces the number of independent communication 
-channels that are required.
+FlexBEは「プロキシ」を使用して、ビヘイビアのすべてのステートに単一のインターフェイスを提供します。 これにより、必要となる独立した通信チャネルの数を減らすことができます。
 
-Typically you create the `_client` in the constructor, and then make use of the proxy instance as needed in `on_enter`, and `execute`.
+通常、コンストラクタで `_client` を作成し、`on_enter` と `execute` で必要に応じてプロキシインスタンスを使用する。
 
-If the state exits before the goal (e.g. if operator requests preemption), then we normally cancel the action goal `on_exit`.
+ステートがゴールより先に終了した場合（例えば、オペレータが先取りを要求した場合）、通常、アクションゴールを`on_exit`でキャンセルします。
 
 ```python
     def on_exit(self, userdata):
-        # Make sure that the action is not running when leaving this state.
-        # A situation where the action would still be active is for example when the operator manually triggers an outcome.
+        # このステートから離れるときは、アクションが実行されていないことを確認する。
+        # アクションがまだアクティブである状況とは、例えば、オペレータが手動で結果をトリガーする場合である。
 
         if not self._client.has_result(self._topic):
             self._client.cancel(self._topic)
@@ -258,7 +235,6 @@ If the state exits before the goal (e.g. if operator requests preemption), then 
 ```
 ----
 
-This example discussed the use of `InputState` to provide operator data to the onboard behavior in collaborative autonomy, the use of behavior composition to define more complex behaviors, and the use of ROS 2 `action` interfaces as the main approach to interacting with 
-more computationally intensive external nodes.
+この例では、協調的自律性においてオンボードビヘイビアにオペレータデータを提供するための`InputState`の使用、より複雑なビヘイビアを定義するためのビヘイビアコンポジションの使用、より計算集約的な外部ノードと対話するための主なアプローチとしてのROS 2 `action`インターフェースの使用について説明しました。
 
-[Back to the overview](../README.md#selectable-transitions)
+[概要に戻ります](../README.md#selectable-transitions)
