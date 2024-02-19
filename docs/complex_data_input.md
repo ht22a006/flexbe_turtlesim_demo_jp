@@ -1,24 +1,22 @@
-# Complex Data Input
+# 複雑なデータ入力
 
-Some of the (sub-)behaviors in the Turtlesim demonstrations use operator input.
+Turtlesimのデモンストレーションの（サブ）ビヘイビアの中には、オペレータの入力を使用するものがあります。
 
-For this we provide a simple pop-up dialog window as part of the `flexbe_input` package in the `flexbe_behavior_engine` repository 
-using the [`input_action_server`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_input/flexbe_input/input_action_server.py) .
+このために、[`input_action_server`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_input/flexbe_input/input_action_server.py) を使って、`flexbe_behavior_engine` リポジトリの `flexbe_input` パッケージの一部としてシンプルなポップアップダイアログウィンドウを提供します。
 
-This simple demonstration is intended to provide basic functionality for limited 
-primitive inputs such as numbers or list/tuples of numbers.
+この簡単なデモンストレーションは、数値や数値のリスト／タプルといった限られたプリミティブ入力に対する基本的な機能を提供することを目的としています。
 
-You are encouraged to develop more complex user interfaces for more complex data structures as needed to support more advanced types.
+より高度なデータ型をサポートするために、必要に応じてより複雑なデータ構造のユーザインターフェイスを開発することが奨励されます。
 
-The `InputState` makes use of the `pickle` module, and is subject to this warning from the Pickle manual:
+`InputState` は `pickle` モジュールを使用しているため、Pickle マニュアルの以下の警告が適用されます。
 
->   Warning The pickle module is not secure against erroneous or maliciously constructed data. 
->   Never unpickle data received from an untrusted or unauthenticated source.
+> 警告 pickle モジュールは誤ったデータや悪意を持って作成されたデータに対して安全ではありません。
+> 信頼されていない、あるいは認証されていないソースから受け取ったデータは絶対に復元 (unpickle) しないでください。
 
-*If using the `InputState` it is up to the user to protect their network from untrusted data!*
+*`InputState`を使用する場合、信頼できないデータからネットワークを保護するのはユーザー次第です。*
 
-ROS 2 messages support serializing using `pickle.dumps` and passing to the `InputState`.
-For example, the code fragment below illustrates creating a `Pose` message to send to FlexBE in response to an action request.
+ROS 2 のメッセージは `pickle.dumps` を使用してシリアライズし、 `InputState` に渡すことができます。
+例えば、以下のコードではアクションリクエストに応答して FlexBE に送信する `Pose` メッセージを作成しています。
 
 ```python
 import ast
@@ -28,21 +26,20 @@ from geometry_msgs.msg import Pose
 from flexbe_msgs.action import BehaviorInput
 
 
-# On custom design side (either UI or user developed action server node)
+# カスタムデザイン側（UIまたはユーザが開発したアクションサーバノード）
 p = Pose()
 p.position.x = 42.
 
 result = BehaviorInput.Result()
-result.data = str(pickle.dumps(p))  # format data for sending as string of bytes
+result.data = str(pickle.dumps(p))  # バイト列として送信するためのデータをフォーマット
 
-# On input state side 
-input_data = ast.literal_eval(result.data)  # convert string to byte array
-response_data = pickle.loads(input_data)  # loads data into Python object
+# 入力ステート側
+input_data = ast.literal_eval(result.data)  # 文字列をバイト配列に変換
+response_data = pickle.loads(input_data)  # Pythonオブジェクトにデータをロード
 
-print(f" respose =?= original : {p == response_data}")  # validate conversion
+print(f" respose =?= original : {p == response_data}")  # 変換を検証
 ```
 
-You are invited to create your own variations of the [`input_action_server`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_input/flexbe_input/input_action_server.py) to handle more complex types.
-
+より複雑なタイプを扱うために、[`input_action_server`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_input/flexbe_input/input_action_server.py)の独自のバリエーションを作成することをお勧めします。
 
 
