@@ -1,30 +1,28 @@
 
-# Pose Behavior
+# Pose ビヘイビア
 
-The "Pose" transition makes use a `StateMachine` container with three states, including the 
-`InputState` discussed in ["Rotate"](rotate_behavior.md) and 
-`TeleportAbsoluteState` first discused in ["Home"](home_behavior.md).
+「Pose」遷移では、[「Rotate」](rotate_behavior.md)で説明した`InputState`と、[「Home」](home_behavior.md)で最初に説明した`TeleportAbsoluteState`を含む3つのステートを持つ`StateMachine`コンテナを使用します。
 
-The `InputState` remaps its `userdata` `data` key to provide the `pose` key used by the `TeleportAbsoluteState`.
+`InputState` は `userdata` `data` キーをリマップして、 `TeleportAbsoluteState` が使用する `pose` キーを提供します。
 
 <p float="center">
-  <img src="img/pose_behavior.png" alt="Pose behavior data flow." width="45%">
-  <img src="img/pose_input.png" alt="Pose input as list of numbers." width="45%">
+  <img src="../img/pose_behavior.png" alt="Poseビヘイビアのデータの流れ。" width="45%">
+  <img src="../img/pose_input.png" alt="数値のリストとしてPose入力。" width="45%">
 </p>
 
-In the `InputState` configuration, we 
-  * specify result type 3 ([`BehaviorInput.Goal.REQUEST_3D`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_msgs/action/BehaviorInput.action)) to request a `list` (or `tuple`) of three numbers from the user, 
-  * specify the prompt message for the user interface
-  * specify a timeout value for the `input_action_server` to become available
-  * specify the output userdata key mapping (e.g. `pose` in this case)
+`InputState`の設定では、次のようにしています。
+  * 3つの数字の `list` (または `tuple`) をユーザーに要求するために、 結果タイプ 3 ([`BehaviorInput.Goal.REQUEST_3D`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_msgs/action/BehaviorInput.action)) を指定します。
+  * ユーザインタフェースのプロンプトメッセージを指定します。
+  * `input_action_server` が利用可能になるまでのタイムアウト値を指定します。
+  * 出力の`userdata` のキーマッピング（例：この場合は `pose`）を指定します。
 
-> Note: For 2D, 3D, 4D request types, we accept `list` (e.g. '[1., 2, 3]'), `tuple` (e.g. '(1., 2, 3)'),
-> or just a comma separated string of numbers (e.g. '1., 2, 3') of the appropriate length as input on the UI.
+> 注：2D、3D、4Dのリクエストタイプでは、`list`(例: '[1., 2, 3]')、`tuple`(例: '(1., 2, 3)')、
+> または適切な長さのカンマで区切られた数字列(例: '1., 2, 3')をUI上で入力することができます。
 
-> Note: The `InputState` `timeout` refers to waiting for the action server to become available. 
-> The system will wait indefinitely for the operator to respond.
+> 注: `InputState` `timeout` はアクションサーバが利用可能になるのを待つことです。
+> システムはオペレータの応答を無期限に待ちます。
 
-The `TeleportAbsoluteState` extracts the pose data from the userdata and makes the non-blocking service call as described in ["Home"](home_behavior.md).
+`TeleportAbsoluteState`は`userdata`からポーズのデータを抽出し、[「Home」](home_behavior.md)で説明されているように、待たない (non-blocking)のサービスコールを行います。
 
 ```python
         if 'pose' in userdata and isinstance(userdata.pose, (list, tuple)):
@@ -33,7 +31,7 @@ The `TeleportAbsoluteState` extracts the pose data from the userdata and makes t
                 self._srv_request.y = float(userdata.pose[1])
                 self._srv_request.theta = 0.0
                 if len(userdata.pose) == 3:
-                    # setting angle is optional
+                    # 角度の設定は任意
                     self._srv_request.theta = float(userdata.pose[2])
 
                 Logger.localinfo(f"Using position = ({self._srv_request.x:.3f}, {self._srv_request.y:.3f}), "
@@ -50,9 +48,8 @@ The `TeleportAbsoluteState` extracts the pose data from the userdata and makes t
 ```
 ----
 
-This example discussed the use of `InputState` to provide more complex operator data to the onboard behavior in collaborative autonomy.
-See ["Rotate"](rotate_behavior.md) and ["Home"](home_behavior.md) discussions for more details about the individual states, and 
-["Eight"](eight_loop.md) for more discussion of the `StateMachine` container.
+この例では、協調自律性において、より複雑なオペレータのデータをオンボードのビヘイビアに提供するための`InputState`の使用について説明しました。
+個々のステートの詳細については[「Rotate」](rotate_behavior.md)と[「Home」](home_behavior.md)を、`StateMachine`コンテナの詳細については[「Eight」](eight_loop.md)を参照してください。
 
 
-[Back to the overview](../README.md#selectable-transitions)
+[概要に戻ります](../README.md#selectable-transitions)
