@@ -90,7 +90,7 @@ Although, not shown in this example, other UI specifications include:
 * `>#` - data passed as input `userdata` from upstream states
 * `#>` - data passed as output `userdata` to downstream states
 
-> Note: Userdata can also be defined at the state machine level.
+> Note: `userdata` can also be defined at the state machine level.
 
 The `LogState` includes two methods: `on_enter` and `execute`.
 The `on_enter` method is called when the state is first entered via a transition.  In this case, the state uses the `Logger`

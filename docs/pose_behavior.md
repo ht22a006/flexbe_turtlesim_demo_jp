@@ -16,7 +16,7 @@ In the `InputState` configuration, we
   * specify result type 3 ([`BehaviorInput.Goal.REQUEST_3D`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_msgs/action/BehaviorInput.action)) to request a `list` (or `tuple`) of three numbers from the user, 
   * specify the prompt message for the user interface
   * specify a timeout value for the `input_action_server` to become available
-  * specify the output userdata key mapping (e.g. `pose` in this case)
+  * specify the output `userdata` key mapping (e.g. `pose` in this case)
 
 > Note: For 2D, 3D, 4D request types, we accept `list` (e.g. '[1., 2, 3]'), `tuple` (e.g. '(1., 2, 3)'),
 > or just a comma separated string of numbers (e.g. '1., 2, 3') of the appropriate length as input on the UI.
@@ -24,7 +24,7 @@ In the `InputState` configuration, we
 > Note: The `InputState` `timeout` refers to waiting for the action server to become available. 
 > The system will wait indefinitely for the operator to respond.
 
-The `TeleportAbsoluteState` extracts the pose data from the userdata and makes the non-blocking service call as described in ["Home"](home_behavior.md).
+The `TeleportAbsoluteState` extracts the pose data from the `userdata` and makes the non-blocking service call as described in ["Home"](home_behavior.md).
 
 ```python
         if 'pose' in userdata and isinstance(userdata.pose, (list, tuple)):

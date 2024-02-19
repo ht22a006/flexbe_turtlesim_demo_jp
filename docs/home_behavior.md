@@ -43,7 +43,7 @@ class TeleportAbsoluteState(EventState):
     -- wait_timeout  float      Duration to wait for service to become available (default: 3.0 seconds)
     -- service_name  string     Service name (default: `teleport_absolute`)
 
-    Outputs
+    Outcomes
     <= done             Service call returned result as expected
     <= failed           Failed to make service call successfully
     <= call_timeout     Service call did not return timely result
@@ -87,7 +87,7 @@ class TeleportAbsoluteState(EventState):
 ```
 
 Given the above state implementation, the `FlexBE Turtlesim Demo` behavior defines an instance of this class, 
-and adds it to the top level state machine in [`flexbe_turtlesim_demo_sm.py`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_sm.py)
+and adds it to the top level state machine in [`flexbe_turtlesim_demo_sm.py`](../flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_flexbe_behaviors/flexbe_turtlesim_demo_sm.py).
 
 A fragment of the `flexbe_turtlesim_demo_sm.py` behavior implementation is shown below.  The values assigned 
 in the `TeleportAbsoluteState()` constructor are taken from the FlexBE editor window shown above.
@@ -132,9 +132,9 @@ with _state_machine:
 For this discusion, we will stick to high level overview. For more details about the state lifecycle see the [Examples](examples.md). 
 
 When the "Home" state becomes active the `on_enter` method of `TeleportAbsoluteState` class is called.
-If the system is using `userdata` the desired pose is extracted.  For our case, we have remapped the name `pose` to the `home` userdata defined on the behavior dashboard.  Again, for a more indepth discussion of `userdata` see the ["Rotate"](rotate_behavior.md) discussion.
+If the system is using `userdata` the desired pose is extracted.  For our case, we have remapped the name `pose` to the `home`` `userdata` defined on the behavior dashboard.  Again, for a more indepth discussion of `userdata` see the ["Rotate"](rotate_behavior.md) discussion.
 
-If this user data is not provided, then the state defaults to using the parameters defined in the by the creation 
+If this `userdata` is not provided, then the state defaults to using the parameters defined in the by the creation 
 in `flexbe_turtlebot_demo_sm` code above.
 
 The state instance makes note of the `self._start_time`, and if available the service call is invoked using an asychronous (non-blocking) 

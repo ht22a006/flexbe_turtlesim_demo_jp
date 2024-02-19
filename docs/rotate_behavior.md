@@ -33,7 +33,7 @@ class RotateTurtleState(EventState):
     -- timeout             Maximum time allowed (seconds)
     -- action_topic        Name of action to invoke
 
-    Outputs
+    Outcomes
     <= rotation_complete   Only a few dishes have been cleaned.
     <= failed              Failed for some reason.
     <= canceled            User canceled before completion.
@@ -210,7 +210,7 @@ In the `InputState` configuration, we
   * specify result type 1 ([`BehaviorInput.Goal.REQUEST_FLOAT`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_msgs/action/BehaviorInput.action)) to request a single number from the user, 
   * specify the prompt message for the user interface
   * specify a timeout value for the `input_action_server` to become available
-  * specify the output userdata key mapping
+  * specify the output `userdata` key mapping
 
 > Note: For float types, we accept integer values without decimals as well.
 
