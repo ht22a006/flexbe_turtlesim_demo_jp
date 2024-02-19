@@ -238,7 +238,7 @@ FlexBEの理論と実装についてのより深い議論については、詳�
 
 ----
 
-## TODO 以下を書き上げる：
+## TODO 以下を書き上げる
 
  * 実行中のビヘイビアへの「アタッチ」などの高度な操作について説明する。
  * FAQとデバッグの助け。
@@ -251,6 +251,12 @@ FlexBEを使用する際には、参照のために以下の文献を使って�
 - Philipp Schillinger, Stefan Kohlbrecher, and Oskar von Stryk, ["Human-Robot Collaborative High-Level Control with Application to Rescue Robotics"](http://dx.doi.org/10.1109/ICRA.2016.7487442), IEEE International Conference on Robotics and Automation (ICRA), Stockholm, Sweden, May 2016.
 
 - Joshua Zutell, David C. Conner and Philipp Schillinger, ["ROS 2-Based Flexible Behavior Engine for Flexible Navigation ,"](http://dx.doi.org/10.1109/SoutheastCon48659.2022.9764047), IEEE SouthEastCon, April 2022.
+
+-----
+## 日本語訳のTODO
+
+  * 画像の中の説明の英語も日本語にする。
+  * オリジナルの間違いの修正をフィードバックする。
 
 -----
 
