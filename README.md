@@ -63,7 +63,7 @@ Turtlesimノード、FlexBE UIアプリ、Flexible Behaviorエンジンを起動
 
 TurtleSimを起動します：
 
-`ros2 run  turtlesim turtlesim_node`
+`ros2 run turtlesim turtlesim_node`
 
 > 注: `Gazebo` のようなシミュレータとは異なり、`TurtleSim` は ROS に `/clock` トピックをパブリッシュしません。 そのため、これらのデモでは `use_sim_time:=True` を設定しないでください！
 > `/clock`がないと何もパブリッシュされないので、システムがハングアップしたように見えます；したがって、TurtleSim は実世界の時計(wallclock) の時刻を使用する必要があります。
