@@ -1,6 +1,6 @@
 # Turtlesim Demo ホーム ビヘイビア
 
-「ホーム」サブビヘイビアは、以下のような一連の状態によって実装されます。
+「ホーム」サブビヘイビアは、以下のような一連のステートによって実装されます。
 
 <p float="center">
   <img src="../img/home_editor_view.png" alt="'Home' behavior." width="45%">
@@ -8,7 +8,7 @@
 
 このビヘイビアは、画面をクリアした後に`FlexBE Turtlesim Demo`ビヘイビアに最初に入ったときに最初に呼び出されます。 
 その後、ビヘイビアはモニタリングビューに表示される「Operator」決定ステートから「Home」遷移を選択することで呼び出されます。
-アクティブな状態は、まずメッセージテキスト`"Go to home position"`で「GoHome」[`LogState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py)に遷移し、次に[`TeleportAbsoluteState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py)
+アクティブなステートは、まずメッセージテキスト`"Go to home position"`で「GoHome」[`LogState`](https://github.com/FlexBE/flexbe_behavior_engine/blob/ros2-devel/flexbe_states/flexbe_states/log_state.py)に遷移し、次に[`TeleportAbsoluteState`](../flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py)
 ステート実装の「Home」ステートのインスタンスに遷移します。 
 その結果は、「AtHome」または「ServiceCallFailed」ステートによってログ出力し、システムは「Operator」決定ステートに遷移します。
 
@@ -30,7 +30,7 @@ from turtlesim.srv import TeleportAbsolute
 
 class TeleportAbsoluteState(EventState):
     """
-    この状態は、TeleportAbsoluteサービスを使用してTurtlesimタートルをテレポートする。
+    このステートは、TeleportAbsoluteサービスを使用してTurtlesimタートルをテレポートする。
 
     引数
     -- turtle_name  string  タートルの名前 (デフォルト: `turtle1`)
@@ -60,7 +60,7 @@ class TeleportAbsoluteState(EventState):
 
         ProxyServiceCaller.initialize(TeleportAbsoluteState._node)
 
-        # 後で使用するために状態パラメータを保存する。
+        # 後で使用するためにステートパラメータを保存する。
         self._call_timeout = Duration(seconds=call_timeout)
         self._wait_timeout = Duration(seconds=wait_timeout)
 
@@ -126,7 +126,7 @@ with _state_machine:
 
 ```
 
-この議論では、高レベルの概要に留まることにします。状態のライフサイクルの詳細については、[例](examples.md)を参照してください。
+この議論では、高レベルの概要に留まることにします。ステートのライフサイクルの詳細については、[例](examples.md)を参照してください。
 
 「Home」ステートがアクティブになると、 `TeleportAbsoluteState` クラスの `on_enter`メソッドが呼び出されます。
 システムが `userdata` を使用している場合は、目的のポーズが抽出されます。 今回のケースでは、`pose`という名前をビヘイビアダッシュボードで定義された`home`という`userdata`にリマップしています。 `userdata`については[Rotate](rotate_behavior.md)を参照してください。
@@ -139,9 +139,9 @@ with _state_machine:
 ```python 
     def on_enter(self, userdata):
         """
-        状態がアクティブになったときにこのメソッドを呼び出す。
+        ステートがアクティブになったときにこのメソッドを呼び出す。
 
-        つまり、別の状態からこの状態への遷移が行われる。
+        つまり、別のステートからこのステートへの遷移が行われる。
         """
 
         if 'pose' in userdata and isinstance(userdata.pose, (list, tuple)):
@@ -199,7 +199,7 @@ with _state_machine:
 ```python
     def execute(self, userdata):
         """
-        状態がアクティブである間、このメソッドを周期的に実行する。
+        ステートがアクティブである間、このメソッドを周期的に実行する。
 
         結果が返されない場合、ステートはアクティブのまま。
         """

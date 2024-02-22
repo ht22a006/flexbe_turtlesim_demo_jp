@@ -60,12 +60,12 @@ class RotateTurtleState(EventState):
 
         # アクションクライアントがアクションゴールの送信に失敗することがある。
         self._error = False
-        self._return = None  # オペレータによって結果がブロックされた場合に戻り値を保持する。
+        self._return = None  # オペレータによって結果が待たされた場合に戻り値を保持する。
         self._start_time = None
 
 ```
 
-内部的には、状態の実装は `userdata.angle` を使用して、
+内部的には、ステートの実装は `userdata.angle` を使用して、
 基本的な `dict` オブジェクトの機能を拡張した FlexBE コア [`userdata.py` クラス](https://github.com/flexbe/flexbe_behavior_engine/flexbe_core/flexbe_core/userdata.py) を使用して保存されたデータにアクセスします。
 
 `Turtlesim Rotation State Behavior` ビヘイビアでは、FlexBE UI Dashboard で `userdata` を `angle_degrees` と定義すます。

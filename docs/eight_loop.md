@@ -30,7 +30,7 @@ class TimedCmdVelState(EventState):
     -- velocity             float     車体速度（m/s）
     -- rotation_rate        float     角速度 (rad/s)
     -- cmd_topic            string    ロボット速度コマンドのトピック名 (デフォルト: 'cmd_vel')
-    -- desired_rate         float     希望する状態更新頻度（デフォルト：50Hz）
+    -- desired_rate         float     希望するステート更新頻度（デフォルト：50Hz）
     <= done                 与えられた時間が過ぎた。
     """
 
@@ -41,7 +41,7 @@ class TimedCmdVelState(EventState):
         # 後で使用するためにステートの引を保存する。
         self._target_time = Duration(seconds=target_time)
 
-        # コンストラクタは、実際に動作を開始するときではなく、ステートマシンを構築するときに呼び出される。
+        # コンストラクタは、実際にビヘイビアを開始するときではなく、ステートマシンを構築するときに呼び出される。
         # したがって、今は開始時刻を保存することはできず、後で保存することになる。
         self._start_time = None
 
@@ -61,7 +61,7 @@ class TimedCmdVelState(EventState):
     def execute(self, userdata):
         """ステートがアクティブな間、このメソッドを周期的に呼び出す。"""
         if self._return:
-            # われわれはステートを完成させたのだから、自律性レベルによってブロックされなければならない。
+            # われわれはステートを完成させたのだから、自律性レベルによって待たされなければならない。
             # ロボットを停止させ、事前の結果を返す。
             if self._cmd_topic:
                 self._pub.publish(self._cmd_topic, Twist())
@@ -71,7 +71,7 @@ class TimedCmdVelState(EventState):
         if self._node.get_clock().now().nanoseconds - self._start_time.nanoseconds > self._target_time.nanoseconds:
             # 正常終了、パブリッシュを繰り返す必要はない
             # 複数のモーションを連鎖させることができるように、
-            # ブロックされない限り（上記）、わざわざ0コマンドを発行することはない
+            # 待たされない限り（上記）、わざわざ0コマンドを発行することはない
             self._return = 'done'
             Logger.localinfo(f"{self._name} : returning 'done'")  # For initial debugging
             return 'done'
@@ -127,12 +127,12 @@ FlexBEは保証されたリアルタイムコントローラーでは*ありま�
 
 様々なステート --「Forward0」、「LeftTurn」、「Forward1」、「RightTurn」、「Forward2」 -- のパラメータは、基本的な8の字パターンを生成するために計算されました。なお、これらは純粋なオープンループの動きであり、`turtlesim`ノードでスポーンする他のカメを避けたり、境界内にとどまったりするような調整はしていません。
 
-オペレータが「Eight」トランジションをクリックすると、または「Full」自律で自動的に選択されると、「EightMove」ステートマシンがトップレベル（または「ルート」）ステートマシンから見てアクティブな状態になり、
+オペレータが「Eight」遷移をクリックすると、または「Full」自律で自動的に選択されると、「EightMove」ステートマシンが最上位（または「ルート」）ステートマシンから見てアクティブな状態になり、
 「EightMove」ステートに`on_enter`すると、最初の「Forward0」ステートがアクティブになり、ビヘイビア エンジンによって実行されるアクティブな状態になります。 「EightMove」ステートは「Forward2」ステートが「done」を返すまでアクティブなままであり、その時点で「EightMove」は「finished」という結果を返します。
 
 > 注：「EightMove」の「failed」結果は当初定義されていたが、内部的には接続されていませんでした。
 > いずれにせよ、定義された以上、ルートレベルで接続されなければなりません。 これによって将来の修正が可能になります。
-> FlexBEは、たとえ一度も行使されなかったとしても、可能性のあるすべての状態結果を終了させることを要求します。
+> FlexBEは、たとえ一度も行使されなかったとしても、可能性のあるすべてのステートの結果を終了させることを要求します。
 > 別の方法として、「EightMove」のエディタビューで、結果ラベルの右側にある赤線のボックスをクリックして、「failed」の結果を削除することもできます。
 
 ----

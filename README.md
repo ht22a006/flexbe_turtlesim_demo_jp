@@ -181,9 +181,9 @@ FlexBEは、階層型有限ステートマシン（HFSM）をサポートして�
 
 このリポジトリの `flexbe_turtlesim_demo_flexbe_states` パッケージには、以下のPythonベースのカスタムなステートの実装が含まれています。
 
-  * [`clear_turtlesim_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/clear_turtlesim_state.py) - *ブロックする* サービスコールを使ってturtlesim ウィンドウをクリアする。
+  * [`clear_turtlesim_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/clear_turtlesim_state.py) - *待たせる* サービスコールを使ってturtlesim ウィンドウをクリアする。
   * [`rotate_turtle_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/rotate_turtle_state.py) - `action` インタフェースを使用して、ユーザが入力した角度にカメを回転させる。
-  * [`teleport_absolute_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py) - *ブロックしない* サービスコールを使って、指定された位置に移動する。
+  * [`teleport_absolute_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/teleport_absolute_state.py) - *待たせない* サービスコールを使って、指定された位置に移動する。
   * [`timed_cmd_vel_state`](flexbe_turtlesim_demo_flexbe_states/flexbe_turtlesim_demo_flexbe_states/timed_cmd_vel_state.py) - 指定された更新レートを使用して、指令速度をパブリッシュする。
 
     > 注：指定のステート更新レートは、ベストエフォートでしかありません。 FlexBEはリアルタイムコントローラではなく、
