@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<behavior name="ODENS Turtlesim Demo">
+
+    <executable package_path="odens_flexbe_behaviors.odens_turtlesim_demo_sm" class="ODENSTurtlesimDemoSM" />
+    <tagstring>Turtlesim, action, service, sub-behavior</tagstring>
+    <author>ISHIKAWA Hiroki</author>
+    <date>Tue Feb 27 2024</date>
+    <description>
+        ODENSの課題
+    </description>
+
+
+    <!-- Contained Behaviors -->
+    <contains name="Turtlesim Input State Behavior" />
+
+    <!-- Available Parameters -->
+
+</behavior>
